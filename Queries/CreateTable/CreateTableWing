@@ -3,9 +3,10 @@
     DROP TABLE WING;
 
     CREATE TABLE WING (
+        Code INT AUTO_INCREMENT,
         Clinic VARCHAR(50),
         Wing VARCHAR(5),
-        PRIMARY KEY (Clinic, Wing),
+        PRIMARY KEY (Code),
         FOREIGN KEY (Clinic) REFERENCES CLINIC(Name)
             ON UPDATE CASCADE
             ON DELETE CASCADE

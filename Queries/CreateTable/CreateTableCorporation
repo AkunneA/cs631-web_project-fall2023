@@ -3,19 +3,13 @@
     DROP TABLE CORPORATION;
 
     CREATE TABLE CORPORATION (
-        CorpName VARCHAR(50) UNIQUE,
+        CorpName VARCHAR(50),
         HqAddr VARCHAR(100),
         HqCity VARCHAR(40),
         HqStateProv CHAR(40),
         HqZIP VARCHAR(20),
         HqCountry CHAR(40),
-        PRIMARY KEY (CorpName),
-        FOREIGN KEY (HqStateProv) REFERENCES StateProv(Code)
-            ON UPDATE CASCADE
-            ON DELETE SET NULL,
-        FOREIGN KEY (HqCountry) REFERENCES Country(Code)
-            ON UPDATE CASCADE
-            ON DELETE SET NULL
+        PRIMARY KEY (CorpName)
     );
     
     INSERT INTO CORPORATION (CorpName, HqAddr, HqCity, HqStateProv, HqZIP, HqCountry) VALUES

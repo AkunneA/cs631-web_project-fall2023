@@ -1,0 +1,20 @@
+/* Wings */
+
+    DROP TABLE WING;
+
+    CREATE TABLE WING (
+        Clinic VARCHAR(50),
+        Wing VARCHAR(5),
+        PRIMARY KEY (Clinic, Wing),
+        FOREIGN KEY (Clinic) REFERENCES CLINIC(Name)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
+    );
+    
+    INSERT INTO WING (Clinic, Wing) VALUES
+        ('High Point Hospital', 'Blue'),
+        ('High Point Hospital', 'Green'),
+        ('Newark Medical Clinic', 'Blue'),
+        ('Newark Medical Clinic', 'Green'),
+        ('Jersey City Health', 'Blue'),
+        ('Jersey City Health', 'Green');

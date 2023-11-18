@@ -3,19 +3,10 @@
     DROP TABLE WING;
 
     CREATE TABLE WING (
-        Code INT AUTO_INCREMENT,
-        Clinic VARCHAR(50),
-        Wing VARCHAR(5),
-        PRIMARY KEY (Code),
-        FOREIGN KEY (Clinic) REFERENCES CLINIC(Name)
-            ON UPDATE CASCADE
-            ON DELETE CASCADE
+        Code VARCHAR(5),
+        PRIMARY KEY (Code)
     );
     
-    INSERT INTO WING (Clinic, Wing) VALUES
-        ('High Point Hospital', 'Blue'),
-        ('High Point Hospital', 'Green'),
-        ('Newark Medical Clinic', 'Blue'),
-        ('Newark Medical Clinic', 'Green'),
-        ('Jersey City Health', 'Blue'),
-        ('Jersey City Health', 'Green');
+    INSERT INTO WING (Code) VALUES
+        ('Blue'),
+        ('Green');

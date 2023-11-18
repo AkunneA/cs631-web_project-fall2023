@@ -3,9 +3,9 @@
     DROP TABLE ANATOMICAL_LOC;
     
     CREATE TABLE ANATOMICAL_LOC (
-        Code INT AUTO_INCREMENT,
-        Description VARCHAR(50),
-        PRIMARY KEY (Code)
+        /*Code INT AUTOINCREMENT,*/
+        Description VARCHAR(50)/*,
+        PRIMARY KEY (Code)*/
     );
 
     INSERT INTO ANATOMICAL_LOC (Description) VALUES

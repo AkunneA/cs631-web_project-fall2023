@@ -1,0 +1,32 @@
+/* Allergies*/
+
+    DROP TABLE ALLERGY;
+
+    CREATE TABLE ALLERGY (
+        Code VARCHAR(10),
+        Description VARCHAR(255),
+        PRIMARY KEY (Code)
+    );
+    
+    INSERT INTO ALLERGY (Code, Description) VALUES
+        ('T78.1XXA', 'Adverse Food Reactions'),
+        ('T78.07XA', 'Anaphylaxis to dairy, initial encounter'),
+        ('T78.08XA', 'Anaphylaxis to egg, initial encounter'),
+        ('T78.01XA', 'Anaphylaxis to peanut, initial encounter'),
+        ('T78.05XA', 'Anaphylaxis to tree nuts or seeds, initial encounter'),
+        ('T78.02XA', 'Anaphylaxis to shellfish, initial encounter'),
+        ('T78.03XA', 'Anaphylaxis to fish, initial encounter'),
+        ('T78.00XA', 'Anaphylactic reaction due to unspecified food, initial encounter'),
+        ('T78.06XA', 'Anaphylactic reaction due to food additives, initial encounter'),
+        ('T88.6XXA', 'Anaphylactic reaction due to adverse effect of correct drug or medicament properly administered, initial encounter'),
+        ('L50.0', 'Allergic Urticaria'),
+        ('T78.3XXA', 'Angioneurotic Edema, initial encounter'),
+        ('L20.9', 'Atopic Dermatitis'),
+        ('L23.9', 'Allergic Contact Dermatitis'),
+        ('L23.6', 'Allergic Contact Dermatitis due to food in contact with the skin'),
+        ('J30.81', 'Allergic Rhinitis due to animal'),
+        ('J30.1', 'Allergic Rhinitis due to seasonal allergen'),
+        ('J30.89', 'Other Allergic Rhinitis (mold, dust mite, perennial)'),
+        ('J30.2', 'Other Seasonal Allergic Rhinitis'),
+        ('J30.5', 'Allergic Rhinitis Due to Food'),
+        ('H10.45', 'Other Chronic Allergic Conjunctivitis');

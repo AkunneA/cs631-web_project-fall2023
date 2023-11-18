@@ -1,0 +1,40 @@
+/* Illnesses*/
+
+    DROP TABLE ILLNESS;
+
+    CREATE TABLE ILLNESS (
+        Code VARCHAR(10),
+        Description VARCHAR(255),
+        PRIMARY KEY (Code)
+    );
+    
+    INSERT INTO ILLNESS (Code, Description) VALUES
+        ('I10', 'Essential (Primary) Hypertension'),
+        ('E11.9', 'Type 2 Diabetes Mellitus without Complications'),
+        ('K21.9', 'Gastroesophageal Reflux Disease without Esophagitis'),
+        ('N18.9', 'Chronic Kidney Disease, Unspecified'),
+        ('J44.9', 'Chronic Obstructive Pulmonary Disease, Unspecified'),
+        ('M54.5', 'Low Back Pain'),
+        ('M79.1', 'Myalgia'),
+        ('F32.9', 'Major Depressive Disorder, Single Episode, Unspecified'),
+        ('F41.9', 'Anxiety Disorder, Unspecified'),
+        ('G47.00', 'Insomnia, Unspecified'),
+        ('C61', 'Malignant Neoplasm of Prostate'),
+        ('C50.919', 'Malignant Neoplasm of Breast, Unspecified'),
+        ('C18.9', 'Malignant Neoplasm of Colon, Unspecified'),
+        ('C34.90', 'Malignant Neoplasm of Bronchus or Lung, Unspecified'),
+        ('C73', 'Malignant Neoplasm of Thyroid Gland'),
+        ('I20.9', 'Angina Pectoris, Unspecified'),
+        ('I25.10', 'Atherosclerotic Heart Disease of Native Coronary Artery without Angina Pectoris'),
+        ('N40.1', 'Enlarged Prostate without Lower Urinary Tract Symptoms'),
+        ('E78.5', 'Hyperlipidemia, Unspecified'),
+        ('J02.9', 'Acute Pharyngitis, Unspecified'),
+        ('K29.00', 'Acute Gastritis without Bleeding'),
+        ('R10.9', 'Abdominal Pain, Unspecified'),
+        ('M25.50', 'Pain in Unspecified Joint'),
+        ('G44.209', 'Tension-Type Headache, Unspecified, Not Intractable'),
+        ('H52.13', 'Myopia, Left Eye, Low Vision'),
+        ('H93.19', 'Tinnitus, Unspecified Ear'),
+        ('H61.90', 'Otitis Media, Unspecified Ear'),
+        ('H10.9', 'Conjunctivitis, Unspecified'),
+        ('B34.9', 'Viral Infection, Unspecified');

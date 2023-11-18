@@ -1,5 +1,7 @@
-/* Anatomical Locaion */
+/* Anatomical Locaions */
+
     DROP TABLE ANATOMICAL_LOC;
+    
     CREATE TABLE ANATOMICAL_LOC (
         Code INT AUTO_INCREMENT,
         Description VARCHAR(50),

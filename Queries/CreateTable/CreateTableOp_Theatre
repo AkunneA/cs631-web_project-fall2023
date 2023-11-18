@@ -1,33 +1,22 @@
 /* Operation Theatres */
+
     DROP TABLE OP_THEATRE;
+
     CREATE TABLE OP_THEATRE (
-        Code INT AUTO_INCREMENT,
-        Facility INT NOT NULL,
-        Theatre CHAR NOT NULL,
-        PRIMARY KEY (Code),
-        FOREIGN KEY (Facility) REFERENCES FACILITY(Code)
+        Clinic VARCHAR(50),
+        Theatre CHAR,
+        PRIMARY KEY (Clinic, Theatre),
+        FOREIGN KEY (Clinic) REFERENCES CLINIC(Name)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
     );
     
-    INSERT INTO OP_THEATRE (Facility, Theatre) VALUES
-        (1, 'A'),
-        (1, 'B'),
-        (3, 'A'),
-        (4, 'A'),
-        (5, 'B'),
-        (5, 'C'),
-        (5, 'D'),
-        (5, 'E'),
-        (6, 'A'),
-        (6, 'B'),
-        (6, 'C'),
-        (6, 'D'),
-        (6, 'E'),
-        (6, 'F'),
-        (6, 'G'),
-        (6, 'H'),
-        (6, 'I'),
-        (6, 'J'),
-        (7, 'A'),
-        (7, 'B'),
-        (7, 'C'),
-        (7, 'D');
+    INSERT INTO OP_THEATRE (Clinic, Theatre) VALUES
+        ('High Point Hospital', 'A'),
+        ('High Point Hospital', 'B'),
+        ('Newark Medical Clinic', 'A'),
+        ('Newark Medical Clinic', 'B'),
+        ('Newark Medical Clinic', 'C'),
+        ('Newark Medical Clinic', 'D'),
+        ('Newark Medical Clinic', 'E'),
+        ('Newark Medical Clinic', 'F');

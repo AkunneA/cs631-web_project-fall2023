@@ -34,5 +34,9 @@
         CHECK ((EmpType = 'NURS' AND YrsNursingExp >= 0) OR (EmpType != 'NURS' AND YrsNursingExp IS NULL))
     );
 
+    INSERT INTO STAFF (Fname, Minit, Lname, Ssn, Gender, EmpType, Title, Salary, Specialty, NurseGrade, YrsNursingExp, Addr, City, StateProv, ZIP, Country, Phone) VALUES
+        ('Lydia', 'L', 'Larkins', '1234567890', 'F', 'SUPP', 'Chief of Staff', 120000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+
 
 

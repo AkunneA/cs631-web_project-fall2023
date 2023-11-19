@@ -4,8 +4,8 @@
 
     CREATE TABLE OP_THEATRE (
         Code INTEGER PRIMARY KEY AUTOINCREMENT,
-        Clinic VARCHAR(50),
-        Theatre CHAR,
+        Clinic VARCHAR(50) NOT NULL,
+        Theatre CHAR NOT NULL,
         FOREIGN KEY (Clinic) REFERENCES CLINIC(Name)
             ON UPDATE CASCADE
             ON DELETE CASCADE

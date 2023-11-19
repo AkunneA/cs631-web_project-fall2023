@@ -1,0 +1,13 @@
+/* Trigger to make sure an updated Nurse Surgery Skill has an EmpType of 'NURS'*/
+
+DROP TRIGGER CHECK_NURSE_SURG_SKILL_UPDATE;
+
+CREATE TRIGGER CHECK_NURSE_SURG_SKILL_UPDATE
+BEFORE UPDATE ON NURSE_SURG_SKILL
+FOR EACH ROW
+WHEN NOT EXISTS (
+    SELECT 1 FROM STAFF WHERE EmpNo = NEW.EmpNo AND EmpType = 'NURS'
+)
+BEGIN
+    SELECT RAISE (ABORT, 'The selected employee must be a Nurse.');
+END;

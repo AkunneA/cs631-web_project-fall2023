@@ -1,0 +1,13 @@
+/* Trigger to make sure that an updated nurse and surgery skill combination is not duplicated */
+
+DROP TRIGGER CHECK_NURSE_SURG_SKILL_DUP_UPDATE;
+
+CREATE TRIGGER CHECK_NURSE_SURG_SKILL_DUP_UPDATE
+BEFORE UPDATE ON NURSE_SURG_SKILL
+FOR EACH ROW
+WHEN EXISTS (
+    SELECT 1 FROM NURSE_SURG_SKILL WHERE EmpNo = NEW.EmpNo AND Skill = NEW.Skill
+)
+    BEGIN
+        SELECT RAISE(ABORT, 'The selected Nurse and Skill combination already exists.');
+    END;

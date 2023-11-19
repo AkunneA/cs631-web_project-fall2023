@@ -1,0 +1,14 @@
+/* Skills for Nursing Staff */
+
+    DROP TABLE NURSE_SURG_SKILL;
+    
+    CREATE TABLE NURSE_SURG_SKILL (
+        EmpNo INTEGER NOT NULL, 
+        Skill INTEGER NOT NULL,
+        FOREIGN KEY (EmpNo) REFERENCES STAFF(EmpNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (Skill) REFERENCES SURG_SKILL (Code)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
+    );

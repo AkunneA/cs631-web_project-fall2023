@@ -1,0 +1,17 @@
+/* Trigger to make sure an updated surgery staff assignment has an EmpType of 'SURG' or 'NURS', that modification of an employee does not place a Surgery's total surgeon count below 1 or total nurse count below 2 */
+
+DROP TRIGGER CHECK_SURGERY_STAFF_UPDATE;
+
+CREATE TRIGGER CHECK_SURGERY_STAFF_UPDATE
+BEFORE UPDATE ON SURGERY_STAFF
+FOR EACH ROW
+WHEN NOT EXISTS (
+    SELECT 1 FROM STAFF WHERE EmpNo = NEW.EmpNo AND (EmpType = 'SURG' OR EmpType = 'NURS')
+) OR (
+    (SELECT COUNT(*) FROM SURGERY_STAFF A, STAFF B WHERE A.EmpNo = B.EmpNo AND A.SurgeryNo = NEW.SurgeryNo AND B.EmpType = 'SURG') < 1
+    OR
+    (SELECT COUNT(*) FROM SURGERY_STAFF A, STAFF B WHERE A.EmpNo = B.EmpNo AND A.SurgeryNo = NEW.SurgeryNo AND B.EmpType = 'NURS') < 2
+)
+BEGIN
+    SELECT RAISE (ABORT, 'The selected employee must be a Surgeon or Nurse and every Surgery must be assigned at least 1 surgeon and at least 2 nurses.');
+END;

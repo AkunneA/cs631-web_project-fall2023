@@ -1,0 +1,13 @@
+/* Trigger to make sure that no updated surgery staff is added with the same surgery and employee combination */
+
+DROP TRIGGER CHECK_SURGERY_STAFF_DUP_UPDATE;
+
+CREATE TRIGGER CHECK_SURGERY_STAFF_DUP_UPDATE
+BEFORE UPDATE ON SURGERY_STAFF
+FOR EACH ROW
+WHEN EXISTS (
+    SELECT 1 FROM SURGERY_STAFF WHERE SurgeryNo = NEW.SurgeryNo AND EmpNo = NEW.EmpNo
+)
+BEGIN
+    SELECT RAISE (ABORT, 'The selected Surgery and Employee combination already exists.');
+END;

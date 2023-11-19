@@ -1,0 +1,12 @@
+/* Trigger to make sure a newly inserted in-patient stay's Nurse has an EmpType of 'NURS' */
+
+DROP TRIGGER CHECK_STAY_NURSE_INSERT;
+
+CREATE TRIGGER CHECK_STAY_NURSE_INSERT
+BEFORE INSERT ON STAY
+FOR EACH ROW
+WHEN NEW.Nurse IS NOT NULL AND NOT EXISTS (
+    SELECT 1 FROM STAFF WHERE EmpNo = NEW.Nurse AND EmpType = 'NURS')
+BEGIN
+    SELECT RAISE (ABORT, 'The selected attending Nurse must be a Nurse.');
+END;

@@ -1,0 +1,24 @@
+/* In-Patient Stays */
+
+    DROP TABLE STAY;
+
+    CREATE TABLE STAY (
+        StayNo INTEGER PRIMARY KEY AUTOINCREMENT,
+        PatientNo INTEGER NOT NULL,
+        Bed VARCHAR(10) NOT NULL,
+        AdmissionDate DATE NOT NULL,
+        DiagnosisNo INTEGER NOT NULL,
+        Nurse INTEGER,
+        FOREIGN KEY (PatientNo) REFERENCES PATIENT(PatientNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (Bed) REFERENCES BED(Code)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (DiagnosisNo) REFERENCES PATIENT_ILLNESS(DiagnosisNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (Nurse) REFERENCES STAFF(EmpNo)
+            ON UPDATE CASCADE
+            ON DELETE SET NULL
+    );

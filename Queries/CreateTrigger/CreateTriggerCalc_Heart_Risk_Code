@@ -9,7 +9,7 @@ BEGIN
     UPDATE PATIENT_CHOLESTEROL
     SET CalculatedRiskCode =
         CASE
-            WHEN (NEW.CalculatedRatio >= 0 AND NEW.CalculatedRatio < 4) THEN 'N'
+            WHEN (NEW.CalculatedRatio < 4) THEN 'N'
             WHEN (NEW.CalculatedRatio >= 4 AND NEW.CalculatedRatio <= 5) THEN 'L'
             ELSE 'M'
             END

@@ -5,7 +5,9 @@ DROP TRIGGER CHECK_MED_DUP_UPDATE;
 CREATE TRIGGER CHECK_MED_DUP_UPDATE
 BEFORE UPDATE ON MED_INTERACT
 FOR EACH ROW
-WHEN (NEW.MedA = NEW.MedB)
+WHEN (NEW.MedA = NEW.MedB) OR EXISTS (
+    SELECT 1 FROM MED_INTERACT WHERE (MedA = NEW.MedA AND MedB = NEW.MedB) OR (MedA = NEW.MedB AND MedB = NEW.MedA)
+)
     BEGIN
-        SELECT RAISE(ABORT, 'Medicine A and Medicine B cannot be set to the same value.');
+        SELECT RAISE(ABORT, 'Medicine A and Medicine B is either set to the same value, or the combination of values entered already exists');
     END;

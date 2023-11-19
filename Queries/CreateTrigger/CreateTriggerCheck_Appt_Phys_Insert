@@ -1,0 +1,13 @@
+/* Trigger to make sure a newly inserted Appointment's Physician has an EmpType of 'PHYS' or Title of 'Chief of Staff' */
+
+DROP TRIGGER CHECK_APPT_PHYS_INSERT;
+
+CREATE TRIGGER CHECK_APPT_PHYS_INSERT
+BEFORE INSERT ON APPOINTMENT
+FOR EACH ROW
+WHEN NOT EXISTS (
+    SELECT 1 FROM STAFF WHERE EmpNo = NEW.Physician AND (EmpType = 'PHYS' OR Title = 'Chief of Staff')
+)
+BEGIN
+    SELECT RAISE (ABORT, 'The selected Employee must be a Physician or the Chief of Staff.');
+END;

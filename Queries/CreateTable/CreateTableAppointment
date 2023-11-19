@@ -1,0 +1,21 @@
+/* Appointments */
+
+DROP TABLE APPOINTMENT;
+
+CREATE TABLE APPOINTMENT (
+    AppointmentNo INTEGER PRIMARY KEY AUTOINCREMENT,
+    PatientNo INTEGER NOT NULL,
+    Physician INTEGER NOT NULL,
+    Clinic VARCHAR(50) NOT NULL,
+    Time DATETIME NOT NULL,
+    Type VARCHAR(15) NOT NULL CHECK(Type IN ('Routine', 'Consultation', 'Follow-up', 'Diagnostic', 'Preventive', 'Emergency')),
+    FOREIGN KEY (PatientNo) REFERENCES PATIENT(PatientNo)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (Physician) REFERENCES STAFF(EmpNo)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (Clinic) REFERENCES CLINIC(Name) 
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);

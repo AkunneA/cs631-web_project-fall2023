@@ -1,0 +1,14 @@
+/* Surgery Types for Nursing Staff */
+
+    DROP TABLE NURSE_SURG_TYPE;
+    
+    CREATE TABLE NURSE_SURG_TYPE (
+        EmpNo INTEGER PRIMARY KEY, 
+        Type INTEGER NOT NULL,
+        FOREIGN KEY (EmpNo) REFERENCES STAFF(EmpNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (Type) REFERENCES SURG_TYPE (Code)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
+    );

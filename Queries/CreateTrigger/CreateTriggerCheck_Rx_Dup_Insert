@@ -1,0 +1,13 @@
+/* Trigger to make sure that no patient is being diagnosed the same medication more than once on a newly created prescription */
+
+DROP TRIGGER CHECK_RX_DUP_INSERT;
+
+CREATE TRIGGER CHECK_RX_DUP_INSERT
+BEFORE INSERT ON PATIENT_PRESCRIPTION
+FOR EACH ROW
+WHEN EXISTS (
+    SELECT 1 FROM PATIENT_PRESCRIPTION WHERE PatientNo = NEW.PatientNo AND Medication = NEW.Medication
+)
+BEGIN
+    SELECT RAISE (ABORT, 'The selected Medication has already been prescribed to this Patient.');
+END;

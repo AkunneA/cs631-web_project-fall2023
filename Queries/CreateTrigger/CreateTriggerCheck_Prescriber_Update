@@ -1,0 +1,13 @@
+/* Trigger to make sure an updated patient prescription PrescribedBy has an EmpType of 'PHYS' or Title of 'Chief of Staff' */
+
+DROP TRIGGER CHECK_PRESCRIBER_UPDATE;
+
+CREATE TRIGGER CHECK_PRESCRIBER_UPDATE
+BEFORE UPDATE ON PATIENT_PRESCRIPTION
+FOR EACH ROW
+WHEN NOT EXISTS (
+    SELECT 1 FROM STAFF WHERE EmpNo = NEW.PrescribedBy AND (EmpType = 'PHYS' OR Title = 'Chief of Staff')
+)
+BEGIN
+    SELECT RAISE (ABORT, 'The selected Prescriber must be a Physician or the Chief of Staff.');
+END;

@@ -3,7 +3,7 @@
     DROP TABLE STAFF;
 
     CREATE TABLE STAFF (
-        EmpNo INT AUTO_INCREMENT,
+        EmpNo INTEGER PRIMARY KEY AUTOINCREMENT,
         Fname VARCHAR(50) NOT NULL,
         Minit CHAR(1),
         Lname VARCHAR(50) NOT NULL,
@@ -11,9 +11,9 @@
         Gender CHAR(1) CHECK (Gender = 'M' OR Gender = 'F'),
         EmpType CHAR(4) NOT NULL CHECK (EmpType = 'PHYS' OR EmpType = 'NURS' OR EmpType = 'SURG' OR EmpType = 'SUPP'),
         Title VARCHAR(50) NOT NULL,
-        Salary INT,
-        Specialty VARCHAR(50),
-        NurseGrade INT,
+        Salary INTEGER,
+        Specialty VARCHAR(50) CHECK (Specialty IN ('Cardiology','Dermatology','Gastroenterology', 'Orthopedics', 'Neurology', 'Ophthalmology', 'Otolaryngology', 'Pediatrics', 'Obstetrics and Gynecology', 'Urology', 'Endocrinology', 'Rheumatology', 'Pulmonology', 'Hematology', 'Infectious Disease', 'Emergency Medicine', 'Plastic Surgery', 'Radiology', 'Anesthesiology', 'Pathology')),
+        NurseGrade INTEGER,
         YrsNursingExp INT,
         Addr VARCHAR(100),
         City VARCHAR(40),
@@ -21,21 +21,17 @@
         ZIP VARCHAR(20),
         Country CHAR(40),
         Phone VARCHAR(10),
-        PRIMARY KEY (EmpNo),
-        FOREIGN KEY (StateProv) REFERENCES STATEPROV(Code)
-            ON UPDATE CASCADE
-            ON DELETE SET NULL,
-        FOREIGN KEY (Country) REFERENCES COUNTRY(Code)
-            ON UPDATE CASCADE
-            ON DELETE SET NULL,
-        CHECK ((EmpType != 'SURG' AND Salary >= 25000 AND Salary <= 300000) OR (EmpType = 'SURG' AND Salary IS NULL)),
+        CHECK ((EmpType != 'SURG' AND Salary IS NOT NULL AND Salary >= 25000 AND Salary <= 300000) OR (EmpType = 'SURG' AND Salary IS NULL)),
         CHECK (((EmpType = 'PHYS' OR EmpType = 'SURG') AND Specialty IS NOT NULL) OR ((EmpType = 'NURS' OR EmpType = 'SUPP') AND Specialty IS NULL)),
-        CHECK ((EmpType = 'NURS' AND NurseGrade >= 1) OR (EmpType != 'NURS' AND NurseGrade IS NULL)),
-        CHECK ((EmpType = 'NURS' AND YrsNursingExp >= 0) OR (EmpType != 'NURS' AND YrsNursingExp IS NULL))
+        CHECK ((EmpType = 'NURS' AND NurseGrade IS NOT NULL AND NurseGrade >= 1) OR (EmpType != 'NURS' AND NurseGrade IS NULL)),
+        CHECK ((EmpType = 'NURS' AND YrsNursingExp IS NOT NULL AND YrsNursingExp >= 0) OR (EmpType != 'NURS' AND YrsNursingExp IS NULL))
     );
 
     INSERT INTO STAFF (Fname, Minit, Lname, Ssn, Gender, EmpType, Title, Salary, Specialty, NurseGrade, YrsNursingExp, Addr, City, StateProv, ZIP, Country, Phone) VALUES
-        ('Lydia', 'L', 'Larkins', '1234567890', 'F', 'SUPP', 'Chief of Staff', 120000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        ('Lydia', 'A', 'Brown', '123456789', 'F', 'SUPP', 'Chief of Staff', 120000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+        ('Jane', 'B', 'White', '111222333', 'F', 'PHYS', 'General Practitioner', 125000, 'Pathology', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+        ('Mark', 'C', 'Green', '333222111', 'M', 'SURG', 'Surgeon', NULL, 'Cardiology', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+        ('Tony', 'D', 'Scarlet', '987654321', 'M', 'NURS', 'Lead Nurse', 100000, NULL, 5, 12, NULL, NULL, NULL, NULL, NULL, NULL);
 
 
 

@@ -1,0 +1,11 @@
+/* Trigger to make sure that medication A and medication B in a newly created medication interaction are not the same value */
+
+DROP TRIGGER CHECK_MED_DUP_INSERT;
+
+CREATE TRIGGER CHECK_MED_DUP_INSERT
+BEFORE INSERT ON MED_INTERACT
+FOR EACH ROW
+WHEN (NEW.MedA = NEW.MedB)
+    BEGIN
+        SELECT RAISE(ABORT, 'Medicine A and Medicine B cannot be set to the same value.');
+    END;

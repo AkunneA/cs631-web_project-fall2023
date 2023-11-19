@@ -3,13 +3,12 @@
     DROP TABLE MEDICATION;
 
     CREATE TABLE MEDICATION (
-        Code VARCHAR(15),
+        Code VARCHAR(15) PRIMARY KEY,
         Name VARCHAR(50) NOT NULL,
         UnitCost DECIMAL(8,2) NOT NULL DEFAULT 0,
         QtyOnHand DECIMAL(8,2) NOT NULL DEFAULT 0,
         QtyOnOrder DECIMAL(8,2) NOT NULL DEFAULT 0,
-        YTDUsage DECIMAL(8,2) NOT NULL DEFAULT 0,
-        PRIMARY KEY (Code)
+        YTDUsage DECIMAL(8,2) NOT NULL DEFAULT 0
     );
 
     INSERT INTO MEDICATION (Code, Name, UnitCost, QtyOnHand, QtyOnOrder, YTDUsage) VALUES

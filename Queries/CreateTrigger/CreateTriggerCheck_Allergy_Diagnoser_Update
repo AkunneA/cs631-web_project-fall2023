@@ -1,0 +1,13 @@
+/* Trigger to make sure an updated patient allergy DiagnosedBy has an EmpType of 'PHYS' or Title of 'Chief of Staff' */
+
+DROP TRIGGER CHECK_ALLERGY_DIAGNOSER_UPDATE;
+
+CREATE TRIGGER CHECK_ALLERGY_DIAGNOSER_UPDATE
+BEFORE UPDATE ON PATIENT_ALLERGY
+FOR EACH ROW
+WHEN NOT EXISTS (
+    SELECT 1 FROM STAFF WHERE EmpNo = NEW.DiagnosedBy AND (EmpType = 'PHYS' OR Title = 'Chief of Staff')
+)
+BEGIN
+    SELECT RAISE (ABORT, 'The selected Diagnoser must be a Physician or the Chief of Staff.');
+END;

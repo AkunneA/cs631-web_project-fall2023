@@ -3,11 +3,10 @@
     DROP TABLE SURG_TYPE;
 
     CREATE TABLE SURG_TYPE (
-        Code INT AUTO_INCREMENT,
+        Code INTEGER PRIMARY KEY AUTOINCREMENT,
         Name VARCHAR(50),
-        AnatomicalLoc INT NOT NULL,
+        AnatomicalLoc INTEGER NOT NULL,
         SpecialNeeds VARCHAR(100),
-        PRIMARY KEY (Code),
         FOREIGN KEY (AnatomicalLoc) REFERENCES ANATOMICAL_LOC(Code)
             ON UPDATE CASCADE
             ON DELETE SET NULL

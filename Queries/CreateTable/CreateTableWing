@@ -3,8 +3,7 @@
     DROP TABLE WING;
 
     CREATE TABLE WING (
-        Code VARCHAR(5),
-        PRIMARY KEY (Code)
+        Code VARCHAR(5) PRIMARY KEY
     );
     
     INSERT INTO WING (Code) VALUES

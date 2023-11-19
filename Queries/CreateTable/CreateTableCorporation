@@ -3,18 +3,17 @@
     DROP TABLE CORPORATION;
 
     CREATE TABLE CORPORATION (
-        CorpName VARCHAR(50),
+        CorpName VARCHAR(50) PRIMARY KEY,
         HqAddr VARCHAR(100),
         HqCity VARCHAR(40),
         HqStateProv CHAR(40),
         HqZIP VARCHAR(20),
-        HqCountry CHAR(40),
-        PRIMARY KEY (CorpName)
+        HqCountry CHAR(40)
     );
     
     INSERT INTO CORPORATION (CorpName, HqAddr, HqCity, HqStateProv, HqZIP, HqCountry) VALUES
         ('Newark Medical Associates, Inc.', '500 Main St', 'Newark', 'New Jersey', '17101', 'United States'),
         ('MediLife Healthcare Corporation', '100 Commerce St', 'New York', 'New York', '10001', 'United States'),
         ('HealthLink Medical Group', '123 Health Way', 'Dublin', NULL, 'D14', 'Ireland'),
-        ('MediCore Hospitals, Inc.', '1200 Main St', 'Jersey City', 'New Jersey', '07030', 'United States'),
+        ('MediCore Hospitals, Inc.', '1200 Jersey St', 'Jersey City', 'New Jersey', '07030', 'United States'),
         ('MediServe Health Systems', '5000 Insurance Dr', 'Toronto', 'Ontario', 'M4C 1T6', 'Canada');

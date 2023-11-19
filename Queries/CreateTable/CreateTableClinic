@@ -3,20 +3,13 @@
     DROP TABLE CLINIC;
 
     CREATE TABLE CLINIC (
-        Name VARCHAR(50),
+        Name VARCHAR(50) PRIMARY KEY,
         Addr VARCHAR(100),
         City VARCHAR(40),
         StateProv CHAR(40),
         ZIP VARCHAR(20),
         Country CHAR(40),
-        Phone VARCHAR(10),
-        PRIMARY KEY (Name),
-        FOREIGN KEY (StateProv) REFERENCES STATEPROV(Code)
-            ON UPDATE CASCADE
-            ON DELETE SET NULL,
-        FOREIGN KEY (Country) REFERENCES COUNTRY(Code)
-            ON UPDATE CASCADE
-            ON DELETE SET NULL
+        Phone VARCHAR(10)
     );
     
         

@@ -3,7 +3,7 @@
     DROP TABLE PATIENT;
 
     CREATE TABLE PATIENT (
-        PatientNo INT AUTO_INCREMENT,
+        PatientNo INTEGER PRIMARY KEY AUTOINCREMENT,
         Fname VARCHAR(50) NOT NULL,
         Minit CHAR(1),
         Lname VARCHAR(50) NOT NULL,
@@ -12,22 +12,14 @@
         Dob DATE NOT NULL,
         BloodType VARCHAR(2) CHECK (BloodType IN ('A', 'B', 'AB', 'O')),
         RhFactor CHAR(1) CHECK (RhFactor IN ('+', '-')),
-        Pcp INT NOT NULL,
+        Pcp INTEGER NOT NULL DEFAULT 1,
         Addr VARCHAR(100),
         City VARCHAR(20),
         StateProv CHAR(2),
         ZIP VARCHAR(10),
         Country CHAR(2),
         Phone VARCHAR(15),
-        PRIMARY KEY (PatientNo),
         FOREIGN KEY (Pcp) REFERENCES STAFF(EmpNo)
             ON UPDATE CASCADE
-            ON DELETE SET DEFAULT,
-        FOREIGN KEY (StateProv) REFERENCES STATEPROV(Code)
-            ON UPDATE CASCADE
-            ON DELETE SET NULL,
-        FOREIGN KEY (Country) REFERENCES COUNTRY(Code)
-            ON UPDATE CASCADE
-            ON DELETE SET NULL,
-        CHECK (Pcp IS NOT NULL AND EXISTS ((SELECT * FROM STAFF WHERE EmpType = 'PHYS') OR (SELECT 1 FROM STAFF WHERE Title = 'Chief of Staff'))),
+            ON DELETE SET DEFAULT
     );

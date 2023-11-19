@@ -3,9 +3,8 @@
     DROP TABLE ILLNESS;
 
     CREATE TABLE ILLNESS (
-        Code VARCHAR(10),
-        Description VARCHAR(255),
-        PRIMARY KEY (Code)
+        Code VARCHAR(10) PRIMARY KEY,
+        Description VARCHAR(255)
     );
     
     INSERT INTO ILLNESS (Code, Description) VALUES

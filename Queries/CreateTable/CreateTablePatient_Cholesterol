@@ -1,13 +1,18 @@
-/* Patient Cholesterol Reading */
+/* Patient Cholesterol Readings */
+
     DROP TABLE PATIENT_CHOLESTEROL;
+
     CREATE TABLE PATIENT_CHOLESTEROL (
-        PatientNo INT,
-        ReadTime DATETIME,
-        SampledBy INT,
-        Hdl INT,
-        Ldl INT,
-        Triglycerides INT,
-        PRIMARY KEY (PatientNo, ReadTime),
-        FOREIGN KEY (PatientNo) REFERENCES PATIENT(PatientNo),
-        FOREIGN KEY (SampledBy) REFERENCES STAFF(EmpNo)
+        ReadingNo INTEGER PRIMARY KEY AUTOINCREMENT,
+        PatientNo INTEGER NOT NULL,
+        ReadTime DATETIME NOT NULL,
+        Hdl INTEGER NOT NULL,
+        Ldl INTEGER NOT NULL,
+        Triglycerides INTEGER NOT NULL,
+        CalculatedRatio DECIMAL (5,4),
+        CalculatedRiskCode CHAR,
+        HighRiskFlag INT DEFAULT 0 CHECK (HighRiskFlag IN (0, 1)),
+        FOREIGN KEY (PatientNo) REFERENCES PATIENT(PatientNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
     );

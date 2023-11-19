@@ -1,8 +1,0 @@
-/* Bed Codes */
-
-DROP TABLE BED_CODE;
-
-CREATE TABLE BED_CODE (
-    Code VARCHAR(100),
-    PRIMARY KEY (Code)
-);

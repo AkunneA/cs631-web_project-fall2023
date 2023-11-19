@@ -1,0 +1,13 @@
+/* Trigger to calculate heart disease risk ratio on newly inserted patient cholesterol readings */
+
+DROP TRIGGER CALC_HEART_RISK_RATIO_INSERT;
+
+CREATE TRIGGER CALC_HEART_RISK_RATIO_INSERT
+AFTER INSERT ON PATIENT_CHOLESTEROL
+FOR EACH ROW
+BEGIN
+    UPDATE PATIENT_CHOLESTEROL
+    SET
+        CalculatedRatio = (NEW.Hdl + NEW.Ldl + (0.2 * NEW.Triglycerides)) / NEW.Hdl
+    WHERE ReadingNo = NEW.ReadingNo;
+END;

@@ -1,0 +1,13 @@
+/* Trigger to make sure a newly inserted Patient's Pcp has an EmpType of 'PHYS' or Title of 'Chief of Staff' */
+
+DROP TRIGGER CHECK_PCP_INSERT;
+
+CREATE TRIGGER CHECK_PCP_INSERT
+BEFORE INSERT ON PATIENT
+FOR EACH ROW
+WHEN NOT EXISTS (
+    SELECT 1 FROM STAFF WHERE EmpNo = NEW.Pcp AND (EmpType = 'PHYS' OR Title = 'Chief of Staff')
+)
+BEGIN
+    SELECT RAISE (ABORT, 'The selected Primary Care Provider must be a Physician or the Chief of Staff.');
+END;

@@ -1,5 +1,7 @@
 /* Skills for Nursing Staff */
+
     DROP TABLE NURSE_SKILL;
+    
     CREATE TABLE NURSE_SKILL (
         EmpNo INT NOT NULL, 
         SurgSkill INT NOT NULL,

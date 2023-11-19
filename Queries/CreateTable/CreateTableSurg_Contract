@@ -1,14 +1,12 @@
 /* Contracts for Surgeons */
 
-    DROP TABLE SURGEON_CONTRACT;
+    DROP TABLE SURG_CONTRACT;
 
-    CREATE TABLE SURGEON_CONTRACT (
-        EmpNo INT, 
+    CREATE TABLE SURG_CONTRACT (
+        EmpNo INTEGER PRIMARY KEY, 
         ContractType VARCHAR(20) NOT NULL CHECK (ContractType IN ('Independent', 'Partnership', 'Call Coverage', 'Research', 'Consulting')),
-        LengthYrs INT NOT NULL,
-        PRIMARY KEY (EmpNo),
+        LengthYrs INTEGER NOT NULL,
         FOREIGN KEY (EmpNo) REFERENCES STAFF(EmpNo)
             ON UPDATE CASCADE
             ON DELETE CASCADE
-        /*CHECK (EmpNo IN (SELECT EmpNo FROM STAFF WHERE EmpType = 'SURG'))*/
     );

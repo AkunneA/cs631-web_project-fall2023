@@ -3,12 +3,12 @@
     DROP TABLE BED;
 
     CREATE TABLE BED (
+        Code INTEGER PRIMARY KEY AUTOINCREMENT,
         Clinic VARCHAR(50),
         Wing VARCHAR(5),
         NurseUnit INT,
         RoomNo INT,
         Bed CHAR CHECK (Bed IN ('A', 'B')),
-        PRIMARY KEY (Clinic, Wing, NurseUnit, RoomNo, Bed),
         FOREIGN KEY (Clinic) REFERENCES CLINIC(Name)
             ON UPDATE CASCADE
             ON DELETE CASCADE,
@@ -21,5 +21,7 @@
     );
 
     INSERT INTO BED (Clinic, Wing, NurseUnit, RoomNo, Bed) VALUES
+        ('Newark Medical Clinic', 'Blue', 1, 1, 'A'),
+        ('Newark Medical Clinic', 'Blue', 1, 1, 'B'),
         ('Newark Medical Clinic', 'Blue', 1, 2, 'A'),
         ('Newark Medical Clinic', 'Blue', 1, 2, 'B');

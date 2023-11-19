@@ -1,0 +1,17 @@
+/* Trigger to calculate heart disease risk code immediately after heart disease risk ratio is calculated */
+
+DROP TRIGGER CALC_HEART_RISK_CODE;
+
+CREATE TRIGGER CALC_HEART_RISK_CODE
+AFTER UPDATE ON PATIENT_CHOLESTEROL
+FOR EACH ROW
+BEGIN
+    UPDATE PATIENT_CHOLESTEROL
+    SET CalculatedRiskCode =
+        CASE
+            WHEN (NEW.CalculatedRatio >= 0 AND NEW.CalculatedRatio < 4) THEN 'N'
+            WHEN (NEW.CalculatedRatio >= 4 AND NEW.CalculatedRatio <= 5) THEN 'L'
+            ELSE 'M'
+            END
+    WHERE ReadingNo = NEW.ReadingNo;
+END;

@@ -1,0 +1,12 @@
+/* Trigger to make sure a deleted physician's primary care patients are reassigned to the Chief of Staff */
+
+DROP TRIGGER AUTOREASSIGN_PCP;
+
+CREATE TRIGGER AUTOREASSIGN_PCP
+AFTER DELETE ON STAFF
+FOR EACH ROW
+BEGIN
+    UPDATE PATIENT
+    SET Pcp = (SELECT EmpNo FROM STAFF WHERE Title = 'Chief of Staff' LIMIT 1)
+    WHERE Pcp = OLD.EmpType;
+END;

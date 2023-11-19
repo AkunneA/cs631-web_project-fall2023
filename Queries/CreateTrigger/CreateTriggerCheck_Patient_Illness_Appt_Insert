@@ -1,0 +1,13 @@
+/* Trigger to make sure a newly inserted patient illness's Appointment belongs to the patient and has a Type of 'Consultation' */
+
+DROP TRIGGER CHECK_PATIENT_ILLNESS_APPT_INSERT;
+
+CREATE TRIGGER CHECK_PATIENT_ILLNESS_APPT_INSERT
+BEFORE INSERT ON PATIENT_ILLNESS
+FOR EACH ROW
+WHEN NOT EXISTS (
+    SELECT 1 FROM APPOINTMENT WHERE PatientNo = NEW.PatientNo AND AppointmentNo = NEW.AppointmentNo AND Type = 'Consultation'
+)
+BEGIN
+    SELECT RAISE (ABORT, 'The selected Appointment must be a Consultation that belongs to the selected Patient.');
+END;

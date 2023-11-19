@@ -4,11 +4,11 @@
 
     CREATE TABLE BED (
         Code INTEGER PRIMARY KEY AUTOINCREMENT,
-        Clinic VARCHAR(50),
-        Wing VARCHAR(5),
-        NurseUnit INT,
-        RoomNo INT,
-        Bed CHAR CHECK (Bed IN ('A', 'B')),
+        Clinic VARCHAR(50) NOT NULL,
+        Wing VARCHAR(5) NOT NULL,
+        NurseUnit INT NOT NULL,
+        RoomNo INT NOT NULL,
+        Bed CHAR NOT NULL CHECK (Bed IN ('A', 'B')),
         FOREIGN KEY (Clinic) REFERENCES CLINIC(Name)
             ON UPDATE CASCADE
             ON DELETE CASCADE,

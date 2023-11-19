@@ -1,0 +1,13 @@
+/* Trigger to make sure that no patient is being diagnosed the same allergy more than once on a newly created patient allergy */
+
+DROP TRIGGER CHECK_PATIENT_ALLERGY_DUP_INSERT;
+
+CREATE TRIGGER CHECK_PATIENT_ALLERGY_DUP_INSERT
+BEFORE INSERT ON PATIENT_ALLERGY
+FOR EACH ROW
+WHEN EXISTS (
+    SELECT 1 FROM PATIENT_ALLERGY WHERE PatientNo = NEW.PatientNo AND Allergy = NEW.Allergy
+)
+BEGIN
+    SELECT RAISE (ABORT, 'The selected Allergy has already been diagnosed for this Patient.');
+END;

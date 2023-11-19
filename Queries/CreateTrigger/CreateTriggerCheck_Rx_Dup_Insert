@@ -1,4 +1,4 @@
-/* Trigger to make sure that no patient is being diagnosed the same medication more than once on a newly created prescription */
+/* Trigger to make sure that no patient is being prescribed the same medication more than once on a newly created prescription */
 
 DROP TRIGGER CHECK_RX_DUP_INSERT;
 

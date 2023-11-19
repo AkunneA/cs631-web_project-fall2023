@@ -1,0 +1,13 @@
+/* Trigger to make sure that no patient is being diagnosed the same illness more than once on a newly created patient illness */
+
+DROP TRIGGER CHECK_PATIENT_ILLNESS_DUP_INSERT;
+
+CREATE TRIGGER CHECK_PATIENT_ILLNESS_DUP_INSERT
+BEFORE INSERT ON PATIENT_ILLNESS
+FOR EACH ROW
+WHEN EXISTS (
+    SELECT 1 FROM PATIENT_ILLNESS WHERE PatientNo = NEW.PatientNo AND Illness = NEW.Illness
+)
+BEGIN
+    SELECT RAISE (ABORT, 'The selected Illness has already been diagnosed for this Patient.');
+END;

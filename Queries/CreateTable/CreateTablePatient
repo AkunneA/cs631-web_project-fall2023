@@ -23,3 +23,62 @@
             ON UPDATE CASCADE
             ON DELETE SET DEFAULT
     );
+
+/* Trigger to make sure a newly inserted Patient's Pcp has an EmpType of 'PHYS' or Title of 'Chief of Staff' */
+
+    CREATE TRIGGER CHECK_PCP_INSERT
+    BEFORE INSERT ON PATIENT
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.Pcp AND (EmpType = 'PHYS' OR Title = 'Chief of Staff')
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Primary Care Provider must be a Physician or the Chief of Staff.');
+    END;
+
+/* Trigger to make sure an updated Patient's Pcp has an EmpType of 'PHYS' or Title of 'Chief of Staff' */
+
+    CREATE TRIGGER CHECK_PCP_UPDATE
+    BEFORE UPDATE ON PATIENT
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.Pcp AND (EmpType = 'PHYS' OR Title = 'Chief of Staff')
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Primary Care Provider must be a Physician or the Chief of Staff.');
+    END;
+
+/* Trigger to make sure an inserted Patient record doesn't cause any Physician to act as PCP to more than 20 patients */
+
+    CREATE TRIGGER CHECK_PCP_COUNT_INSERT
+    BEFORE INSERT ON PATIENT
+    FOR EACH ROW
+    WHEN (
+        (SELECT COUNT(*) FROM PATIENT WHERE Pcp = NEW.Pcp) >= 20
+    )
+    BEGIN
+       SELECT RAISE (ABORT, 'This Physician already acts as a Primary Care Provider for 20 patients and no more can be added.'); 
+    END;
+
+/* Trigger to make sure a deleted  Patient's record doesn't cause any Physician to act as PCP to less than 7 patients */
+
+    CREATE TRIGGER CHECK_PCP_COUNT_DELETE
+    BEFORE DELETE ON PATIENT
+    FOR EACH ROW
+    WHEN (
+        (SELECT COUNT(*) FROM PATIENT WHERE Pcp = OLD.Pcp) <= 7
+    )
+    BEGIN
+       SELECT RAISE (ABORT, 'This Physician only acts as a Primary Care Provider for 7 patients and none can be removed.'); 
+    END;
+
+/* Trigger to make sure a deleted physician's primary care patients are reassigned to the Chief of Staff */
+
+    CREATE TRIGGER AUTOREASSIGN_PCP
+    AFTER DELETE ON STAFF
+    FOR EACH ROW
+    BEGIN
+        UPDATE PATIENT
+        SET Pcp = (SELECT EmpNo FROM STAFF WHERE Title = 'Chief of Staff' LIMIT 1)
+        WHERE Pcp = OLD.EmpType;
+    END;

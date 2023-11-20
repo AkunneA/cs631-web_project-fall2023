@@ -22,3 +22,49 @@
             ON UPDATE CASCADE
             ON DELETE SET NULL
     );
+
+/* Trigger to make sure a newly inserted in-patient stay's Diagnosis belongs to that Patient */
+
+    CREATE TRIGGER CHECK_STAY_DIAGNOSIS_INSERT
+    BEFORE INSERT ON STAY
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM PATIENT_ILLNESS WHERE DiagnosisNo = NEW.DiagnosisNo AND PatientNo = NEW.PatientNo)
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Diagnosis must belong to the selected Patient.');
+    END;
+
+/* Trigger to make sure an updated in-patient stay's Diagnosis belongs to that Patient */
+
+    CREATE TRIGGER CHECK_STAY_DIAGNOSIS_UPDATE
+    BEFORE UPDATE ON STAY
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM PATIENT_ILLNESS WHERE DiagnosisNo = NEW.DiagnosisNo AND PatientNo = NEW.PatientNo)
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Diagnosis must belong to the selected Patient.');
+    END;
+
+/* Trigger to make sure a newly inserted in-patient stay's Nurse has an EmpType of 'NURS' */
+
+    CREATE TRIGGER CHECK_STAY_NURSE_INSERT
+    BEFORE INSERT ON STAY
+    FOR EACH ROW
+    WHEN NEW.Nurse IS NOT NULL AND NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.Nurse AND EmpType = 'NURS')
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected attending Nurse must be a Nurse.');
+    END;
+
+/* Trigger to make sure an updated in-patient stay doesn't cause any Nurse's total patient count to fall below 5 */
+
+    CREATE TRIGGER CHECK_STAY_NURSE_UPDATE
+    BEFORE UPDATE ON STAY
+    FOR EACH ROW
+    WHEN NEW.Nurse IS NOT NULL AND NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.Nurse AND EmpType = 'NURS'
+        ) OR (
+            SELECT COUNT(*) FROM STAY WHERE Nurse = OLD.Nurse) <= 5
+    BEGIN
+        SELECT RAISE (ABORT, "The selected attending Nurse must be a Nurse and Patients cannot be removed from Nurses who aren't overseeing at least 5 other Patients.");
+    END;

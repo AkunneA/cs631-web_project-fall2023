@@ -16,3 +16,43 @@
             ON UPDATE CASCADE
             ON DELETE CASCADE
     );
+
+/* Trigger to calculate heart disease risk ratio on newly inserted patient cholesterol readings */
+
+    CREATE TRIGGER CALC_HEART_RISK_RATIO_INSERT
+    AFTER INSERT ON PATIENT_CHOLESTEROL
+    FOR EACH ROW
+    BEGIN
+        UPDATE PATIENT_CHOLESTEROL
+        SET
+            CalculatedRatio = (NEW.Hdl + NEW.Ldl + (0.2 * NEW.Triglycerides)) / NEW.Hdl
+        WHERE ReadingNo = NEW.ReadingNo;
+    END;
+
+/* Trigger to calculate heart disease risk ratio on updated patient cholesterol readings */
+
+    CREATE TRIGGER CALC_HEART_RISK_RATIO_UPDATE
+    AFTER UPDATE ON PATIENT_CHOLESTEROL
+    FOR EACH ROW
+    BEGIN
+        UPDATE PATIENT_CHOLESTEROL
+        SET
+            CalculatedRatio = (NEW.Hdl + NEW.Ldl + (0.2 * NEW.Triglycerides)) / NEW.Hdl
+        WHERE ReadingNo = NEW.ReadingNo;
+    END;
+
+/* Trigger to calculate heart disease risk code immediately after heart disease risk ratio is calculated */
+
+    CREATE TRIGGER CALC_HEART_RISK_CODE
+    AFTER UPDATE ON PATIENT_CHOLESTEROL
+    FOR EACH ROW
+    BEGIN
+        UPDATE PATIENT_CHOLESTEROL
+        SET CalculatedRiskCode =
+            CASE
+                WHEN (NEW.CalculatedRatio < 4) THEN 'N'
+                WHEN (NEW.CalculatedRatio >= 4 AND NEW.CalculatedRatio <= 5) THEN 'L'
+                ELSE 'M'
+                END
+        WHERE ReadingNo = NEW.ReadingNo;
+    END;

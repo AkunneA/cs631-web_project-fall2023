@@ -33,6 +33,26 @@
         ('Mark', 'C', 'Green', '333222111', 'M', 'SURG', 'Surgeon', NULL, 'Cardiology', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
         ('Tony', 'D', 'Scarlet', '987654321', 'M', 'NURS', 'Lead Nurse', 100000, NULL, 5, 12, NULL, NULL, NULL, NULL, NULL, NULL);
 
+/* Trigger to prevent update of EmpNo or Title on Employee 1 */
+
+CREATE TRIGGER CHECK_EMPNO1_UPDATE
+BEFORE UPDATE ON STAFF
+FOR EACH ROW
+WHEN (OLD.EmpNo = 1 AND NEW.EmpNo != 1) OR (OLD.EmpNo = 1 AND New.Title != 'Chief of Staff')
+    BEGIN
+        SELECT RAISE (ABORT, 'Employee 1 must be the Chief of Staff and cannot be deleted.');
+    END;
+
+/* Trigger to prevent deletion of Employee 1 */
+
+CREATE TRIGGER CHECK_EMPNO1_DELETE
+BEFORE DELETE ON STAFF
+FOR EACH ROW
+WHEN (OLD.EmpNo = 1)
+    BEGIN
+        SELECT RAISE (ABORT, 'Employee 1 cannot be deleted.');
+    END;
+
 
 
 

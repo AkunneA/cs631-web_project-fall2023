@@ -20,3 +20,27 @@
         ('Newark Medical Clinic', 'D'),
         ('Newark Medical Clinic', 'E'),
         ('Newark Medical Clinic', 'F');
+
+/* Trigger to make sure that no new operating theatre is added with the same clinic and theatre combination */
+
+    CREATE TRIGGER CHECK_OP_THREATRE_DUP_INSERT
+    BEFORE INSERT ON OP_THEATRE
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM OP_THEATRE WHERE Clinic = NEW.Clinic AND Theatre = NEW.Theatre
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Operating Theatre already exists.');
+    END;
+
+/* Trigger to make sure that no updated operating theatre has the same clinic and theatre combination */
+
+    CREATE TRIGGER CHECK_OP_THREATRE_DUP_UPDATE
+    BEFORE UPDATE ON OP_THEATRE
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM OP_THEATRE WHERE Clinic = NEW.Clinic AND Theatre = NEW.Theatre
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Operating Theatre already exists.');
+    END;

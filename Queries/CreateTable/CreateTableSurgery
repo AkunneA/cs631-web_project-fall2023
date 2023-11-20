@@ -5,12 +5,16 @@
     CREATE TABLE SURGERY (
         SurgeryNo INTEGER PRIMARY KEY AUTOINCREMENT,
         PatientNo INTEGER NOT NULL,
+        Surgeon INTEGER NOT NULL,
         SurgeryTime DATETIME NOT NULL,
         OpTheatre INTEGER NOT NULL,
         SurgeryType INTEGER NOT NULL,
         FOREIGN KEY (PatientNo) REFERENCES PATIENT(PatientNo)
             ON UPDATE CASCADE
             ON DELETE CASCADE,
+        FOREIGN KEY (Surgeon) REFERENCES STAFF(EmpNo)
+            ON UPDATE CASCADE
+            ON DELETE RESTRICT,
         FOREIGN KEY (OpTheatre) REFERENCES OP_THEATRE(Code)
             ON UPDATE CASCADE
             ON DELETE CASCADE,
@@ -18,3 +22,51 @@
             ON UPDATE CASCADE
             ON DELETE CASCADE
     );
+
+/* Trigger to make sure a newly inserted Surgery's Surgeon has an EmpType of 'SURG' */
+
+    CREATE TRIGGER CHECK_SURGEON_INSERT
+    BEFORE INSERT ON SURGERY
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.Surgeon AND EmpType = 'SURG'
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Surgeon must be a Surgeon.');
+    END;
+
+/* Trigger to make sure an updated Surgery's Surgeon has an EmpType of 'SURG' */
+
+    CREATE TRIGGER CHECK_SURGEON_UPDATE
+    BEFORE UPDATE ON SURGERY
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.Surgeon AND EmpType = 'SURG'
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Surgeon must be a Surgeon.');
+    END;
+
+/* Trigger to make sure a newly inserted Surgery's Surgery Type has at least 1 skill */
+
+    CREATE TRIGGER CHECK_SURGERY_SKILL_EXISTS_INSERT
+    BEFORE INSERT ON SURGERY
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM SURG_TYPE_SKILL WHERE NEW.SurgeryType = Type
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Surgery Type must have at least one skill to be assigned to a Surgery.');
+    END;
+
+/* Trigger to make sure an updated Surgery's Surgery Type has at least 1 skill */
+
+    CREATE TRIGGER CHECK_SURGERY_SKILL_EXISTS_UPDATE
+    BEFORE UPDATE ON SURGERY
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM SURG_TYPE_SKILL WHERE NEW.SurgeryType = Type
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Surgery Type must have at least one skill to be assigned to a Surgery.');
+    END;

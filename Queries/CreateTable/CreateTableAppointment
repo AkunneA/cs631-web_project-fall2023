@@ -1,21 +1,46 @@
 /* Appointments */
 
-DROP TABLE APPOINTMENT;
+    DROP TABLE APPOINTMENT;
 
-CREATE TABLE APPOINTMENT (
-    AppointmentNo INTEGER PRIMARY KEY AUTOINCREMENT,
-    PatientNo INTEGER NOT NULL,
-    Physician INTEGER NOT NULL,
-    Clinic VARCHAR(50) NOT NULL,
-    Time DATETIME NOT NULL,
-    Type VARCHAR(15) NOT NULL CHECK(Type IN ('Routine', 'Consultation', 'Follow-up', 'Diagnostic', 'Preventive', 'Emergency')),
-    FOREIGN KEY (PatientNo) REFERENCES PATIENT(PatientNo)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    FOREIGN KEY (Physician) REFERENCES STAFF(EmpNo)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    FOREIGN KEY (Clinic) REFERENCES CLINIC(Name) 
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
-);
+    CREATE TABLE APPOINTMENT (
+        AppointmentNo INTEGER PRIMARY KEY AUTOINCREMENT,
+        PatientNo INTEGER NOT NULL,
+        Physician INTEGER NOT NULL,
+        Clinic VARCHAR(50) NOT NULL,
+        Time DATETIME NOT NULL,
+        Type VARCHAR(15) NOT NULL CHECK(Type IN ('Routine', 'Consultation', 'Follow-up', 'Diagnostic', 'Preventive', 'Emergency')),
+        FOREIGN KEY (PatientNo) REFERENCES PATIENT(PatientNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (Physician) REFERENCES STAFF(EmpNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (Clinic) REFERENCES CLINIC(Name) 
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
+    );
+
+/* Trigger to make sure a newly inserted Appointment's Physician has an EmpType of 'PHYS' or Title of 'Chief of Staff' */
+
+    CREATE TRIGGER CHECK_APPT_PHYS_INSERT
+    BEFORE INSERT ON APPOINTMENT
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.Physician AND (EmpType = 'PHYS' OR Title = 'Chief of Staff')
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Employee must be a Physician or the Chief of Staff.');
+    END;
+
+/* Trigger to make sure an updated Appointment's Physician has an EmpType of 'PHYS' or Title of 'Chief of Staff' */
+
+    CREATE TRIGGER CHECK_APPT_PHYS_UPDATE
+    BEFORE UPDATE ON APPOINTMENT
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.Physician AND (EmpType = 'PHYS' OR Title = 'Chief of Staff')
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Employee must be a Physician or the Chief of Staff.');
+    END;
+

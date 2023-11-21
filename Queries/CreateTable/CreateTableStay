@@ -5,7 +5,7 @@
     CREATE TABLE STAY (
         StayNo INTEGER PRIMARY KEY AUTOINCREMENT,
         PatientNo INTEGER NOT NULL,
-        Bed VARCHAR(10) NOT NULL,
+        Bed INTEGER NOT NULL,
         AdmissionDate DATE NOT NULL,
         DiagnosisNo INTEGER NOT NULL,
         Nurse INTEGER,

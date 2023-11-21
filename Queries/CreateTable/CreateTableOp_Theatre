@@ -23,7 +23,7 @@
 
 /* Trigger to make sure that no new operating theatre is added with the same clinic and theatre combination */
 
-    CREATE TRIGGER CHECK_OP_THREATRE_DUP_INSERT
+    CREATE TRIGGER CHECK_OP_THEATRE_DUP_INSERT
     BEFORE INSERT ON OP_THEATRE
     FOR EACH ROW
     WHEN EXISTS (
@@ -35,7 +35,7 @@
 
 /* Trigger to make sure that no updated operating theatre has the same clinic and theatre combination */
 
-    CREATE TRIGGER CHECK_OP_THREATRE_DUP_UPDATE
+    CREATE TRIGGER CHECK_OP_THEATRE_DUP_UPDATE
     BEFORE UPDATE ON OP_THEATRE
     FOR EACH ROW
     WHEN EXISTS (

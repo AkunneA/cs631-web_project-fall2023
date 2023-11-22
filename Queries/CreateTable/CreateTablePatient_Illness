@@ -66,18 +66,6 @@
         SELECT RAISE (ABORT, 'The selected Illness has already been diagnosed for this Patient.');
     END;
 
-/* Trigger to make sure that an update to a patient illness record doesn't leave a patient with zero illnesses */
-
-    CREATE TRIGGER CHECK_PATIENT_ILLNESS_COUNT_UPDATE
-    BEFORE UPDATE ON PATIENT_ILLNESS
-    FOR EACH ROW
-    WHEN (
-        (SELECT COUNT(*) FROM PATIENT_ILLNESS WHERE PatientNo = OLD.PatientNo) <= 1
-    )
-    BEGIN
-        SELECT RAISE(ABORT, 'Patients must have at least one illness.');
-    END;
-
 /* Trigger to make sure that deleting a patient illness record doesn't leave a patient with zero illnesses */
 
     CREATE TRIGGER CHECK_PATIENT_ILLNESS_COUNT_DELETE

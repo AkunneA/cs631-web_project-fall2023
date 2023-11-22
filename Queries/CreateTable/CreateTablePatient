@@ -60,16 +60,37 @@
        SELECT RAISE (ABORT, 'This Physician already acts as a Primary Care Provider for 20 patients and no more can be added.'); 
     END;
 
+/* Trigger to make sure an updated Patient's record doesn't cause any Physician to act as PCP to more than 20 patients */
+
+    CREATE TRIGGER CHECK_PCP_COUNT_UPDATE_20
+    BEFORE UPDATE ON PATIENT
+    FOR EACH ROW
+    WHEN (SELECT COUNT(*) FROM PATIENT WHERE Pcp = NEW.Pcp) >= 20
+    BEGIN
+       SELECT RAISE (ABORT, 'This Physician already acts as a Primary Care Provider for 20 patients and no more can be added.'); 
+    END;
+
+/* Trigger to make sure an updated Patient's record doesn't cause any Physician to act as PCP to less than 7 patients */
+
+    CREATE TRIGGER CHECK_PCP_COUNT_UPDATE_7
+    BEFORE UPDATE ON PATIENT
+    FOR EACH ROW
+    WHEN OLD.Pcp IS NOT NULL AND 
+        ((SELECT COUNT(*) FROM PATIENT WHERE Pcp = OLD.Pcp) <= 7)
+    BEGIN
+       SELECT RAISE (ABORT, 'This Physician only acts as a Primary Care Provider for 7 or less patients and none can be removed.'); 
+    END;
+
 /* Trigger to make sure a deleted  Patient's record doesn't cause any Physician to act as PCP to less than 7 patients */
 
     CREATE TRIGGER CHECK_PCP_COUNT_DELETE
     BEFORE DELETE ON PATIENT
     FOR EACH ROW
-    WHEN (
+    WHEN OLD.Pcp IS NOT NULL AND (
         (SELECT COUNT(*) FROM PATIENT WHERE Pcp = OLD.Pcp) <= 7
     )
     BEGIN
-       SELECT RAISE (ABORT, 'This Physician only acts as a Primary Care Provider for 7 patients and none can be removed.'); 
+       SELECT RAISE (ABORT, 'This Physician only acts as a Primary Care Provider for 7 or less patients and none can be removed.'); 
     END;
 
 /* Trigger to make sure a deleted physician's primary care patients are reassigned to the Chief of Staff */

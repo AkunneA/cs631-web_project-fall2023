@@ -56,15 +56,34 @@
         SELECT RAISE (ABORT, 'The selected attending Nurse must be a Nurse.');
     END;
 
-/* Trigger to make sure an updated in-patient stay doesn't cause any Nurse's total patient count to fall below 5 */
+/* Trigger to make sure an updated in-patient stay's Nurse has an EmpType of 'NURS' */
 
     CREATE TRIGGER CHECK_STAY_NURSE_UPDATE
     BEFORE UPDATE ON STAY
     FOR EACH ROW
     WHEN NEW.Nurse IS NOT NULL AND NOT EXISTS (
         SELECT 1 FROM STAFF WHERE EmpNo = NEW.Nurse AND EmpType = 'NURS'
-        ) OR (
-            SELECT COUNT(*) FROM STAY WHERE Nurse = OLD.Nurse) <= 5
+        )
     BEGIN
-        SELECT RAISE (ABORT, "The selected attending Nurse must be a Nurse and Patients cannot be removed from Nurses who aren't overseeing at least 5 other Patients.");
+        SELECT RAISE (ABORT, 'The selected attending Nurse must be a Nurse.');
+    END;
+
+/* Trigger to make sure an updated in-patient stay doesn't cause any Nurse's total patient count to fall below 5 */
+
+    CREATE TRIGGER CHECK_STAY_NURSE_COUNT_UPDATE
+    BEFORE UPDATE ON STAY
+    FOR EACH ROW
+    WHEN OLD.Nurse IS NOT NULL AND (SELECT COUNT(*) FROM STAY WHERE Nurse = OLD.Nurse) <= 5
+    BEGIN
+        SELECT RAISE (ABORT, 'This Nurse only acts as an Attending Nurse for 5 or less patients and none can be removed.');
+    END;
+
+/* Trigger to make sure a deleted in-patient stay doesn't cause any Nurse's total patient count to fall below 5 */
+
+    CREATE TRIGGER CHECK_STAY_NURSE_COUNT_DELETE
+    BEFORE DELETE ON STAY
+    FOR EACH ROW
+    WHEN OLD.Nurse IS NOT NULL AND (SELECT COUNT(*) FROM STAY WHERE Nurse = OLD.Nurse) <= 5
+    BEGIN
+        SELECT RAISE (ABORT, 'This Nurse only acts as an Attending Nurse for 5 or less patients and none can be removed.');
     END;

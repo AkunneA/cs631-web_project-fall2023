@@ -1,9 +1,10 @@
-/* Anatomical Locaion */
+/* Anatomical Locaions */
+
     DROP TABLE ANATOMICAL_LOC;
+    
     CREATE TABLE ANATOMICAL_LOC (
-        Code INT AUTO_INCREMENT,
-        Description VARCHAR(50),
-        PRIMARY KEY (Code)
+        Code INTEGER PRIMARY KEY AUTOINCREMENT,
+        Description VARCHAR(50)
     );
 
     INSERT INTO ANATOMICAL_LOC (Description) VALUES

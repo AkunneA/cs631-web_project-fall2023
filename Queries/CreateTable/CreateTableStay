@@ -1,0 +1,115 @@
+/* In-Patient Stays */
+
+    DROP TABLE STAY;
+
+    CREATE TABLE STAY (
+        StayNo INTEGER PRIMARY KEY AUTOINCREMENT,
+        PatientNo INTEGER NOT NULL,
+        Bed INTEGER NOT NULL,
+        AdmissionDate DATE NOT NULL,
+        DiagnosisNo INTEGER NOT NULL,
+        Physician INTEGER,
+        Nurse INTEGER,
+        FOREIGN KEY (PatientNo) REFERENCES PATIENT(PatientNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (Bed) REFERENCES BED(Code)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (DiagnosisNo) REFERENCES PATIENT_ILLNESS(DiagnosisNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (Physician) REFERENCES STAFF(EmpNo)
+            ON UPDATE CASCADE
+            ON DELETE SET NULL
+        FOREIGN KEY (Nurse) REFERENCES STAFF(EmpNo)
+            ON UPDATE CASCADE
+            ON DELETE SET NULL
+    );
+
+/* Trigger to make sure a newly inserted in-patient stay's Diagnosis belongs to that Patient */
+
+    CREATE TRIGGER CHECK_STAY_DIAGNOSIS_INSERT
+    BEFORE INSERT ON STAY
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM PATIENT_ILLNESS WHERE DiagnosisNo = NEW.DiagnosisNo AND PatientNo = NEW.PatientNo)
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Diagnosis must belong to the selected Patient.');
+    END;
+
+/* Trigger to make sure an updated in-patient stay's Diagnosis belongs to that Patient */
+
+    CREATE TRIGGER CHECK_STAY_DIAGNOSIS_UPDATE
+    BEFORE UPDATE ON STAY
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM PATIENT_ILLNESS WHERE DiagnosisNo = NEW.DiagnosisNo AND PatientNo = NEW.PatientNo)
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Diagnosis must belong to the selected Patient.');
+    END;
+
+/* Trigger to make sure a newly inserted in-patient stay's Nurse has an EmpType of 'NURS' */
+
+    CREATE TRIGGER CHECK_STAY_NURSE_INSERT
+    BEFORE INSERT ON STAY
+    FOR EACH ROW
+    WHEN NEW.Nurse IS NOT NULL AND NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.Nurse AND EmpType = 'NURS')
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected attending Nurse must be a Nurse.');
+    END;
+
+/* Trigger to make sure an updated in-patient stay's Nurse has an EmpType of 'NURS' */
+
+    CREATE TRIGGER CHECK_STAY_NURSE_UPDATE
+    BEFORE UPDATE ON STAY
+    FOR EACH ROW
+    WHEN NEW.Nurse IS NOT NULL AND NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.Nurse AND EmpType = 'NURS'
+        )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected attending Nurse must be a Nurse.');
+    END;
+
+/* Trigger to make sure an updated in-patient stay doesn't cause any Nurse's total patient count to fall below 5 */
+
+    CREATE TRIGGER CHECK_STAY_NURSE_COUNT_UPDATE
+    BEFORE UPDATE ON STAY
+    FOR EACH ROW
+    WHEN OLD.Nurse IS NOT NULL AND (SELECT COUNT(*) FROM STAY WHERE Nurse = OLD.Nurse) <= 5
+    BEGIN
+        SELECT RAISE (ABORT, 'This Nurse only acts as an Attending Nurse for 5 or less patients and none can be removed.');
+    END;
+
+/* Trigger to make sure a deleted in-patient stay doesn't cause any Nurse's total patient count to fall below 5 */
+
+    CREATE TRIGGER CHECK_STAY_NURSE_COUNT_DELETE
+    BEFORE DELETE ON STAY
+    FOR EACH ROW
+    WHEN OLD.Nurse IS NOT NULL AND (SELECT COUNT(*) FROM STAY WHERE Nurse = OLD.Nurse) <= 5
+    BEGIN
+        SELECT RAISE (ABORT, 'This Nurse only acts as an Attending Nurse for 5 or less patients and none can be removed.');
+    END;
+
+/* Trigger to make sure a newly inserted in-patient stay's Physician has an EmpType of 'PHYS' */
+
+    CREATE TRIGGER CHECK_STAY_PHYS_INSERT
+    BEFORE INSERT ON STAY
+    FOR EACH ROW
+    WHEN NEW.Physician IS NOT NULL AND NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.Physician AND EmpType = 'PHYS')
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Physician must be a physician.');
+    END;
+
+/* Trigger to make sure an updated in-patient stay's Physician has an EmpType of 'PHYS' */
+
+    CREATE TRIGGER CHECK_STAY_PHYS_UPDATE
+    BEFORE UPDATE ON STAY
+    FOR EACH ROW
+    WHEN NEW.Physician IS NOT NULL AND NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.Physician AND EmpType = 'PHYS')
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Physician must be a physician.');
+    END;

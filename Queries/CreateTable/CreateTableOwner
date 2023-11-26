@@ -1,21 +1,58 @@
 /* Owners */
+
     DROP TABLE OWNER;
+
     CREATE TABLE OWNER (
-        OwnerID INT AUTO_INCREMENT,
-        OwnerType VARCHAR(20) NOT NULL CHECK (OwnerType IN ('Corporation', 'Physician')),
-        EmpNo INT UNIQUE,
-        CorpNo INT UNIQUE,
-        /* Either EmpNo or CorpNo must exist */
-        PRIMARY KEY (OwnerID),
-        FOREIGN KEY (EmpNo) REFERENCES STAFF(EmpNo), /* Physicians only? */
-        FOREIGN KEY (CorpNo) REFERENCES CORPORATION(CorpNo)
+        OwnerID INTEGER PRIMARY KEY AUTOINCREMENT,
+        Clinic VARCHAR(50) NOT NULL,
+        CorpName VARCHAR(50),
+        EmpNo INTEGER,
+        PctOwnership INT NOT NULL,
+        FOREIGN KEY (EmpNo) REFERENCES STAFF(EmpNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (Clinic) REFERENCES CLINIC(Name)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (CorpName) REFERENCES CORPORATION(CorpName)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE/*,
+        CHECK ((EmpNo IS NOT NULL AND CorpName IS NULL) OR (EmpNo IS NULL AND CorpName IS NOT NULL) )*/
     );
 
-    INSERT INTO OWNER (OwnerType, EmpNo, CorpNo) VALUES
-        ('Corporation', NULL, 1),
-        ('Corporation', NULL, 2),
-        ('Corporation', NULL, 3),
-        ('Corporation', NULL, 4),
-        ('Corporation', NULL, 5),
-        ('Physician', 1, NULL),
-        ('Physician', 13, NULL);
+    INSERT INTO OWNER (Clinic, CorpName, EmpNo, PctOwnership) VALUES
+        ('Newark Medical Clinic', 'Newark Medical Associates, Inc.', NULL, 75),
+        ('Newark Medical Clinic', 'MediLife Healthcare Corporation', NULL, 20),
+        ('Newark Medical Clinic', NULL, 2, 5);
+
+/* Trigger to make sure that every newly created owner consists of either a Corporation or a Physician, and never both */
+
+    CREATE TRIGGER CHECK_OWNER_INSERT
+    BEFORE INSERT ON OWNER
+    FOR EACH ROW
+    WHEN NOT (
+        (NEW.EmpNo IS NOT NULL AND NEW.CorpName IS NULL AND EXISTS (
+            SELECT 1 FROM STAFF WHERE EmpNo = NEW.EmpNo AND EmpType = 'PHYS'
+        ))
+        OR
+        (NEW.EmpNo IS NULL AND NEW.CorpName IS NOT NULL)
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'Each owner must be either Physician or a Corporation.');
+    END;
+
+/* Trigger to make sure that every updated owner consists of either a Corporation or a Physician, and never both */
+
+    CREATE TRIGGER CHECK_OWNER_UPDATE
+    BEFORE UPDATE ON OWNER
+    FOR EACH ROW
+    WHEN NOT (
+        (NEW.EmpNo IS NOT NULL AND NEW.CorpName IS NULL AND EXISTS (
+            SELECT 1 FROM STAFF WHERE EmpNo = NEW.EmpNo AND EmpType = 'PHYS'
+        ))
+        OR
+        (NEW.EmpNo IS NULL AND NEW.CorpName IS NOT NULL)
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'Each owner must be either Physician or a Corporation.');
+    END;

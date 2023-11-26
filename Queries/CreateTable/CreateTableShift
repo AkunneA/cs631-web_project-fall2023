@@ -1,0 +1,34 @@
+/* Employee Shifts */
+
+    DROP TABLE SHIFT;
+
+    CREATE TABLE SHIFT (
+        ShiftNo INTEGER PRIMARY KEY AUTOINCREMENT,
+        EmpNo INTEGER NOT NULL,
+        StartDate DATE NOT NULL,
+        Shift INTEGER NOT NULL CHECK (Shift IN (1, 2, 3))
+    );
+
+/* Trigger to make sure that a newly inserted shift does does not assign one employee more than one shift per starting day */
+
+    CREATE TRIGGER CHECK_SHIFT_DUP_INSERT
+    BEFORE INSERT ON SHIFT
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM SHIFT WHERE EmpNo = NEW.EmpNo AND StartDate = NEW.StartDate 
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Employee already has a shift scheduled for this date.');
+    END;
+
+/* Trigger to make sure that an updated shift does does not assign one employee more than one shift per starting day */
+
+    CREATE TRIGGER CHECK_SHIFT_DUP_UPDATE
+    BEFORE UPDATE ON SHIFT
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM SHIFT WHERE EmpNo = NEW.EmpNo AND StartDate = NEW.StartDate AND ShiftNo != NEW.ShiftNo
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Employee already has a shift scheduled for this date.');
+    END;

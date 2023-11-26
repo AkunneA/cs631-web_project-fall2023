@@ -1,9 +1,38 @@
 /* Surgery Type-Skill Mappings */
+
     DROP TABLE SURG_TYPE_SKILL;
+
     CREATE TABLE SURG_TYPE_SKILL (
-        Type INT,
-        Skill INT,
-        PRIMARY KEY (Type, Skill),
-        FOREIGN KEY (Type) REFERENCES SURG_TYPE(Code),
+        Type INTEGER NOT NULL,
+        Skill INTEGER NOT NULL,
+        FOREIGN KEY (Type) REFERENCES SURG_TYPE(Code)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
         FOREIGN KEY (Skill) REFERENCES SURG_SKILL(Code)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
     );
+
+/* Trigger to make sure that a newly added surgery type and surgery skill combination is not duplicated */
+
+    CREATE TRIGGER CHECK_SURG_TYPE_SKILL_DUP_INSERT
+    BEFORE INSERT ON SURG_TYPE_SKILL
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM SURG_TYPE_SKILL WHERE Type = NEW.Type AND Skill = NEW.Skill
+    )
+        BEGIN
+            SELECT RAISE(ABORT, 'The selected Type and Skill combination already exists.');
+        END;
+
+/* Trigger to make sure that an updated surgery type and surgery skill combination is not duplicated */
+
+    CREATE TRIGGER CHECK_SURG_TYPE_SKILL_DUP_UPDATE
+    BEFORE UPDATE ON SURG_TYPE_SKILL
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM SURG_TYPE_SKILL WHERE Type = NEW.Type AND Skill = NEW.Skill
+    )
+        BEGIN
+            SELECT RAISE(ABORT, 'The selected Type and Skill combination already exists.');
+        END;

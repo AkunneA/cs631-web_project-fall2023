@@ -1,12 +1,68 @@
 /* Patient Allergies */
+
     DROP TABLE PATIENT_ALLERGY;
+
     CREATE TABLE PATIENT_ALLERGY (
-        PatientNo INT,
-        Allergy VARCHAR(10), /* Any way to limit this to just certain types of ICD10? */
-        DiagnosisDate DATE,
-        DiagnosedBy INT NOT NULL, /* Any way to limit this to just certain types of staff? */
-        PRIMARY KEY (PatientNo, Allergy, DiagnosisDate),
-        FOREIGN KEY (PatientNo) REFERENCES Patient(PatientNo),
-        FOREIGN KEY (Allergy) REFERENCES ICD10(Code),
-        FOREIGN KEY(DiagnosedBy) REFERENCES Staff(EmpNo)
+        DiagnosisNo INTEGER PRIMARY KEY AUTOINCREMENT,
+        PatientNo INTEGER NOT NULL,
+        Allergy VARCHAR(10) NOT NULL,
+        AppointmentNo INT NOT NULL,
+        FOREIGN KEY (PatientNo) REFERENCES Patient(PatientNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (Allergy) REFERENCES ALLERGY(Code)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY(AppointmentNo) REFERENCES APPOINTMENT(AppointmentNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
     );
+
+/* Trigger to make sure that no patient is being diagnosed the same allergy more than once on a newly created patient allergy */
+
+    CREATE TRIGGER CHECK_PATIENT_ALLERGY_DUP_INSERT
+    BEFORE INSERT ON PATIENT_ALLERGY
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM PATIENT_ALLERGY WHERE PatientNo = NEW.PatientNo AND Allergy = NEW.Allergy
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Allergy has already been diagnosed for this Patient.');
+    END;
+
+/* Trigger to make sure that no patient is being diagnosed the same allergy more than once on an updatedpatient allergy */
+
+    CREATE TRIGGER CHECK_PATIENT_ALLERGY_DUP_UPDATE
+    BEFORE UPDATE ON PATIENT_ALLERGY
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM PATIENT_ALLERGY WHERE PatientNo = NEW.PatientNo AND Allergy = NEW.Allergy
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Allergy has already been diagnosed for this Patient.');
+    END;
+
+/* Trigger to make sure a newly inserted patient allergy's Appointment belongs to the patient and has a Type of 'Consultation' */
+
+    CREATE TRIGGER CHECK_PATIENT_ALLERGY_APPT_INSERT
+    BEFORE INSERT ON PATIENT_ALLERGY
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM APPOINTMENT WHERE PatientNo = NEW.PatientNo AND AppointmentNo = NEW.AppointmentNo AND Type = 'Consultation'
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Appointment must be a Consultation that belongs to the selected Patient.');
+    END;
+
+/* Trigger to make sure an updated patient allergy's Appointment belongs to the patient and has a Type of 'Consultation' */
+
+    CREATE TRIGGER CHECK_PATIENT_ALLERGY_APPT_UPDATE
+    BEFORE UPDATE ON PATIENT_ALLERGY
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM APPOINTMENT WHERE PatientNo = NEW.PatientNo AND AppointmentNo = NEW.AppointmentNo AND Type = 'Consultation'
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Appointment must be a Consultation that belongs to the selected Patient.');
+    END;
+

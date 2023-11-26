@@ -1,12 +1,79 @@
 /* Patient Illnesses */
+
     DROP TABLE PATIENT_ILLNESS;
+
     CREATE TABLE PATIENT_ILLNESS (
-        PatientNo INT,
-        Illness VARCHAR(10), /* Any way to limit this to just certain types of ICD10? */
-        DiagnosisDate DATE,
-        DiagnosedBy INT NOT NULL, /* Any way to limit this to just certain types of staff? */
-        PRIMARY KEY (PatientNo, Illness, DiagnosisDate),
-        FOREIGN KEY (PatientNo) REFERENCES Patient(PatientNo),
-        FOREIGN KEY (Illness) REFERENCES ICD10(Code),
-        FOREIGN KEY(DiagnosedBy) REFERENCES Staff(EmpNo)
+        DiagnosisNo INTEGER PRIMARY KEY AUTOINCREMENT,
+        PatientNo INTEGER NOT NULL,
+        Illness VARCHAR(10) NOT NULL,
+        AppointmentNo INT NOT NULL,
+        FOREIGN KEY (PatientNo) REFERENCES Patient(PatientNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (Illness) REFERENCES ILLNESS(Code)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY(AppointmentNo) REFERENCES APPOINTMENT(AppointmentNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
     );
+
+/* Trigger to make sure a newly inserted patient illness's Appointment belongs to the patient and has a Type of 'Consultation' */
+
+    CREATE TRIGGER CHECK_PATIENT_ILLNESS_APPT_INSERT
+    BEFORE INSERT ON PATIENT_ILLNESS
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM APPOINTMENT WHERE PatientNo = NEW.PatientNo AND AppointmentNo = NEW.AppointmentNo AND Type = 'Consultation'
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Appointment must be a Consultation that belongs to the selected Patient.');
+    END;
+
+/* Trigger to make sure an updated patient illness's Appointment belongs to the patient and has a Type of 'Consultation' */
+
+    CREATE TRIGGER CHECK_PATIENT_ILLNESS_APPT_UPDATE
+    BEFORE UPDATE ON PATIENT_ILLNESS
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM APPOINTMENT WHERE PatientNo = NEW.PatientNo AND AppointmentNo = NEW.AppointmentNo AND Type = 'Consultation'
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Appointment must be a Consultation that belongs to the selected Patient.');
+    END;
+
+/* Trigger to make sure that no patient is being diagnosed the same illness more than once on a newly created patient illness */
+
+    CREATE TRIGGER CHECK_PATIENT_ILLNESS_DUP_INSERT
+    BEFORE INSERT ON PATIENT_ILLNESS
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM PATIENT_ILLNESS WHERE PatientNo = NEW.PatientNo AND Illness = NEW.Illness
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Illness has already been diagnosed for this Patient.');
+    END;
+
+/* Trigger to make sure that no patient is being diagnosed the same illness more than once on an updated patient illness */
+
+    CREATE TRIGGER CHECK_PATIENT_ILLNESS_DUP_UPDATE
+    BEFORE UPDATE ON PATIENT_ILLNESS
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM PATIENT_ILLNESS WHERE PatientNo = NEW.PatientNo AND Illness = NEW.Illness
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Illness has already been diagnosed for this Patient.');
+    END;
+
+/* Trigger to make sure that deleting a patient illness record doesn't leave a patient with zero illnesses */
+
+    CREATE TRIGGER CHECK_PATIENT_ILLNESS_COUNT_DELETE
+    BEFORE DELETE ON PATIENT_ILLNESS
+    FOR EACH ROW
+    WHEN (
+        (SELECT COUNT(*) FROM PATIENT_ILLNESS WHERE PatientNo = OLD.PatientNo) <= 1
+    )
+    BEGIN
+        SELECT RAISE(ABORT, 'Patients must have at least one illness.');
+    END;

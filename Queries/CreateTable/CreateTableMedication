@@ -1,0 +1,24 @@
+/* Medications */
+
+    DROP TABLE MEDICATION;
+
+    CREATE TABLE MEDICATION (
+        Code VARCHAR(15) PRIMARY KEY,
+        Name VARCHAR(50) NOT NULL,
+        UnitCost DECIMAL(8,2) NOT NULL DEFAULT 0,
+        QtyOnHand DECIMAL(8,2) NOT NULL DEFAULT 0,
+        QtyOnOrder DECIMAL(8,2) NOT NULL DEFAULT 0,
+        YTDUsage DECIMAL(8,2) NOT NULL DEFAULT 0
+    );
+
+    INSERT INTO MEDICATION (Code, Name, UnitCost, QtyOnHand, QtyOnOrder, YTDUsage) VALUES
+        ('00168047515', 'Ibuprofen 200mg Tablets', 0.15, 500, 100, 300),
+        ('00378046501', 'Amoxicillin 500mg Capsules', 0.25, 300, 50, 200),
+        ('00093529201', 'Lisinopril 10mg Tablets', 0.30, 200, 20, 150),
+        ('00054446001', 'Metformin 500mg Tablets', 0.20, 400, 30, 250),
+        ('00378233001', 'Simvastatin 20mg Tablets', 0.35, 150, 10, 100),
+        ('00173048710', 'Omeprazole 20mg Capsules', 0.40, 100, 5, 80),
+        ('00781101001', 'Levothyroxine 50mcg Tablets', 0.18, 250, 15, 180),
+        ('00378636501', 'Losartan 50mg Tablets', 0.33, 180, 25, 120),
+        ('00527313101', 'Atorvastatin 40mg Tablets', 0.45, 120, 8, 90),
+        ('00093714901', 'Hydrochlorothiazide 25mg Tablets', 0.28, 220, 18, 160);

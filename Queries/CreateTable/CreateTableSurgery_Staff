@@ -1,11 +1,99 @@
 /* Surgery Staff Assignments */
+
     DROP TABLE SURGERY_STAFF;
+
     CREATE TABLE SURGERY_STAFF (
-        SurgeryNo INT,
-        EmpNo INT,
-        /* Any way to make sure there is at least one surgeon and two nurses per surgery? */
-        /* Any way to make sure that assigned nurses have the proper skills? */
-        PRIMARY KEY (SurgeryNo, EmpNo),
-        FOREIGN KEY (SurgeryNo) REFERENCES SURGERY(SurgeryNo),
+        SurgeryNo INTEGER NOT NULL,
+        EmpNo INTEGER NOT NULL,
+        FOREIGN KEY (SurgeryNo) REFERENCES SURGERY(SurgeryNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
         FOREIGN KEY (EmpNo) REFERENCES STAFF(EmpNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
     );
+
+/* Trigger to make sure a newly inserted surgery staff assignment has an EmpType of 'NURS' */
+
+    CREATE TRIGGER CHECK_SURGERY_STAFF_INSERT
+    BEFORE INSERT ON SURGERY_STAFF
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.EmpNo AND EmpType = 'NURS')
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected employee must be a Nurse.');
+    END;
+
+/* Trigger to make sure an updated surgery staff assignment has an EmpType 'NURS' */
+
+    CREATE TRIGGER CHECK_SURGERY_STAFF_UPDATE
+    BEFORE UPDATE ON SURGERY_STAFF
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.EmpNo AND EmpType = 'NURS'
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected employee must be a Nurse.');
+    END;
+
+/* Trigger to make sure an deleted surgery staff assignment does not place a Surgery's total nurse count below 2 */
+
+    CREATE TRIGGER CHECK_SURGERY_STAFF_DELETE
+    BEFORE DELETE ON SURGERY_STAFF
+    FOR EACH ROW
+    WHEN
+        (SELECT COUNT(*) FROM SURGERY_STAFF WHERE SurgeryNo = OLD.SurgeryNo) <= 2
+    BEGIN
+        SELECT RAISE (ABORT, 'Every Surgery must have at least 2 nurses.');
+    END;
+
+/* Trigger to make sure that no new surgery staff is added with the same surgery and employee combination */
+
+    CREATE TRIGGER CHECK_SURGERY_STAFF_DUP_INSERT
+    BEFORE INSERT ON SURGERY_STAFF
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM SURGERY_STAFF WHERE SurgeryNo = NEW.SurgeryNo AND EmpNo = NEW.EmpNo
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Surgery and Employee combination already exists.');
+    END;
+
+/* Trigger to make sure that no updated surgery staff is added with the same surgery and employee combination */
+
+    CREATE TRIGGER CHECK_SURGERY_STAFF_DUP_UPDATE
+    BEFORE UPDATE ON SURGERY_STAFF
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM SURGERY_STAFF WHERE SurgeryNo = NEW.SurgeryNo AND EmpNo = NEW.EmpNo
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Surgery and Employee combination already exists.');
+    END;
+
+/* Trigger to make sure a newly inserted Nurse for a Surgery specializes in the appropriate surgery type */
+
+    CREATE TRIGGER CHECK_SURGERY_NURSE_INSERT
+    BEFORE INSERT ON SURGERY_STAFF
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM SURGERY A, NURSE_SURG_TYPE B WHERE A.SurgeryNo = NEW.SurgeryNo AND NEW.EmpNo = B.EmpNo AND A.SurgeryType = B.Type
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Nurse does not possess the appropriate Surgery Type specialization for the selected Surgery.');
+    END;
+
+/* Trigger to make sure an updated Nurse for a Surgery specializes in the appropriate surgery type */
+
+    CREATE TRIGGER CHECK_SURGERY_NURSE_UPDATE
+    BEFORE UPDATE ON SURGERY_STAFF
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.EmpNo AND EmpType = 'NURS'
+    )
+    AND NOT EXISTS (
+        SELECT 1 FROM SURGERY A, NURSE_SURG_TYPE B WHERE A.SurgeryNo = NEW.SurgeryNo AND NEW.EmpNo = B.EmpNo AND A.SurgeryType = B.Type
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Nurse does not possess the appropriate Surgery Type specialization for the selected Surgery.');
+    END;

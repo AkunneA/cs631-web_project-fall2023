@@ -1,0 +1,69 @@
+/* Patient Prescriptions */
+
+    DROP TABLE PATIENT_PRESCRIPTION;
+
+    CREATE TABLE PATIENT_PRESCRIPTION (
+        PrescriptionNo INTEGER PRIMARY KEY AUTOINCREMENT,
+        PatientNo INTEGER NOT NULL,
+        Medication VARCHAR(15) NOT NULL,
+        Dosage VARCHAR(20) NOT NULL,
+        Freq VARCHAR(20) NOT NULL,
+        PrescribedBy INT NOT NULL,
+        FOREIGN KEY (PatientNo) REFERENCES PATIENT(PatientNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (Medication) REFERENCES MEDICATION(Code)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (PrescribedBy) REFERENCES STAFF(EmpNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
+    );
+
+/* Trigger to make sure that no patient is being prescribed the same medication more than once on a newly created prescription */
+
+    CREATE TRIGGER CHECK_RX_DUP_INSERT
+    BEFORE INSERT ON PATIENT_PRESCRIPTION
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM PATIENT_PRESCRIPTION WHERE PatientNo = NEW.PatientNo AND Medication = NEW.Medication
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Medication has already been prescribed to this Patient.');
+    END;
+
+/* Trigger to make sure that no patient is being prescribed the same medication more than once on an updated prescription */
+
+    CREATE TRIGGER CHECK_RX_DUP_UPDATE
+    BEFORE UPDATE ON PATIENT_PRESCRIPTION
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM PATIENT_PRESCRIPTION WHERE PatientNo = NEW.PatientNo AND Medication = NEW.Medication AND PrescriptionNo <> NEW.PrescriptionNo
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Medication has already been prescribed to this Patient.');
+    END;
+
+/* Trigger to make sure a newly inserted patient prescription PrescribedBy has an EmpType of 'PHYS' or Title of 'Chief of Staff' */
+
+    CREATE TRIGGER CHECK_PRESCRIBER_INSERT
+    BEFORE INSERT ON PATIENT_PRESCRIPTION
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.PrescribedBy AND (EmpType = 'PHYS' OR Title = 'Chief of Staff')
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Prescriber must be a Physician or the Chief of Staff.');
+    END;
+
+/* Trigger to make sure an updated patient prescription PrescribedBy has an EmpType of 'PHYS' or Title of 'Chief of Staff' */
+
+    CREATE TRIGGER CHECK_PRESCRIBER_UPDATE
+    BEFORE UPDATE ON PATIENT_PRESCRIPTION
+    FOR EACH ROW
+    WHEN NOT EXISTS (
+        SELECT 1 FROM STAFF WHERE EmpNo = NEW.PrescribedBy AND (EmpType = 'PHYS' OR Title = 'Chief of Staff')
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Prescriber must be a Physician or the Chief of Staff.');
+    END;

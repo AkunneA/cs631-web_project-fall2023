@@ -1,0 +1,19 @@
+/* Clinics */
+
+    DROP TABLE CLINIC;
+
+    CREATE TABLE CLINIC (
+        Name VARCHAR(50) PRIMARY KEY,
+        Addr VARCHAR(100),
+        City VARCHAR(40),
+        StateProv CHAR(40),
+        ZIP VARCHAR(20),
+        Country CHAR(40),
+        Phone VARCHAR(10)
+    );
+    
+        
+    INSERT INTO CLINIC (Name, Addr, City, StateProv, ZIP, Country, Phone) VALUES
+        ('Newark Medical Clinic', '1500 Commerce Avenue', 'Newark', 'New Jersey', '07101', 'United States', '555-123-4567'),
+        ('Jersey City Health', '12-04 Market Street', 'Jersey City', 'New Jersey', '07302', 'United States', '555-234-5678'),
+        ('High Point Hospital', '86 Trade Boulevard', 'Harrison', 'New Jersey', '07029', 'United States', '555-456-7890');

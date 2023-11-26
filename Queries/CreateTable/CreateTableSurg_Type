@@ -1,10 +1,21 @@
 /* Surgery Types */
+
     DROP TABLE SURG_TYPE;
+
     CREATE TABLE SURG_TYPE (
-        Code INT AUTO_INCREMENT,
-        Description VARCHAR(50),
-        AnatomicalLoc INT NOT NULL,
-        Category CHAR(1) NOT NULL CHECK (Category IN ('O', 'H')),
-        PRIMARY KEY (Code),
-        FOREIGN KEY (AnatomicalLoc) REFERENCES Anatomical_Loc(Code)
-    );
+        Code INTEGER PRIMARY KEY AUTOINCREMENT,
+        Name VARCHAR(50),
+        Category CHAR CHECK (Category IN ('O', 'H')),
+        AnatomicalLoc INTEGER NOT NULL,
+        SpecialNeeds VARCHAR(100),
+        FOREIGN KEY (AnatomicalLoc) REFERENCES ANATOMICAL_LOC(Code)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
+);
+
+    INSERT INTO SURG_TYPE (Name, Category, AnatomicalLoc, SpecialNeeds) VALUES
+        ('Orthopedic Surgery', 'H', 43, 'None'),
+        ('Cardiovascular Surgery', 'H', 18, 'Cardiac monitoring required'),
+        ('Neurological Surgery', 'H', 41, 'Neurosurgeon needed'),
+        ('General Surgery', 'H', 1, 'None'),
+        ('Plastic Surgery', 'O', 24, 'Dermatologist consultation required');

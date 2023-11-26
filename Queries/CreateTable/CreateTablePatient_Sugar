@@ -1,11 +1,13 @@
-/* Patient Blood Sugar Reading */
+/* Patient Blood Sugar Readings */
+
     DROP TABLE PATIENT_SUGAR;
+
     CREATE TABLE PATIENT_SUGAR (
-        PatientNo INT,
-        ReadTime DATETIME,
-        SampledBy INT,
-        mgdL INT,
-        PRIMARY KEY (PatientNo, ReadTime),
-        FOREIGN KEY (PatientNo) REFERENCES PATIENT(PatientNo),
-        FOREIGN KEY (SampledBy) REFERENCES STAFF(EmpNo)
+        ReadingNo INTEGER PRIMARY KEY AUTOINCREMENT,
+        PatientNo INTEGER NOT NULL,
+        ReadTime DATETIME NOT NULL,
+        mgdL INTEGER NOT NULL,
+        FOREIGN KEY (PatientNo) REFERENCES PATIENT(PatientNo)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
     );

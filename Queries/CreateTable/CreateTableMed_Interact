@@ -1,11 +1,40 @@
-/* NDC (Medication) Interactions */
+/* Medication Interactions */
 
     DROP TABLE MED_INTERACT;
+
     CREATE TABLE MED_INTERACT (
-        NdcA VARCHAR(15),
-        NdcB VARCHAR(15), /* Not equal to NdcA */
+        InteractionNo INTEGER PRIMARY KEY AUTOINCREMENT,
+        MedA VARCHAR(15) NOT NULL,
+        MedB VARCHAR(15) NOT NULL,
         Severity CHAR NOT NULL CHECK (Severity IN ('N', 'L', 'M', 'S')),
-        PRIMARY KEY (NdcA, NdcB),
-        FOREIGN KEY (NdcA) REFERENCES NDC(Code),
-        FOREIGN KEY (NdcB) REFERENCES NDC(Code)
-);
+        FOREIGN KEY (MedA) REFERENCES MEDICATION(Code)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        FOREIGN KEY (MedB) REFERENCES MEDICATION(Code)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
+    );
+
+/* Trigger to make sure that medication A and medication B in a newly created medication interaction are not the same value */
+
+    CREATE TRIGGER CHECK_MED_DUP_INSERT
+    BEFORE INSERT ON MED_INTERACT
+    FOR EACH ROW
+    WHEN (NEW.MedA = NEW.MedB) OR EXISTS (
+        SELECT 1 FROM MED_INTERACT WHERE (MedA = NEW.MedA AND MedB = NEW.MedB) OR (MedA = NEW.MedB AND MedB = NEW.MedA)
+    )
+        BEGIN
+            SELECT RAISE(ABORT, 'Medicine A and Medicine B is either set to the same value, or the combination of values entered already exists');
+        END;
+
+/* Trigger to make sure that medication A and medication B in an updated medication interaction are not the same value */
+
+    CREATE TRIGGER CHECK_MED_DUP_UPDATE
+    BEFORE UPDATE ON MED_INTERACT
+    FOR EACH ROW
+    WHEN (NEW.MedA = NEW.MedB) OR EXISTS (
+        SELECT 1 FROM MED_INTERACT WHERE (MedA = NEW.MedA AND MedB = NEW.MedB) OR (MedA = NEW.MedB AND MedB = NEW.MedA)
+    )
+        BEGIN
+            SELECT RAISE(ABORT, 'Medicine A and Medicine B is either set to the same value, or the combination of values entered already exists');
+        END;

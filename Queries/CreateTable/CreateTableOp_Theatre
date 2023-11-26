@@ -1,33 +1,46 @@
 /* Operation Theatres */
+
     DROP TABLE OP_THEATRE;
+
     CREATE TABLE OP_THEATRE (
-        Code INT AUTO_INCREMENT,
-        Facility INT NOT NULL,
+        Code INTEGER PRIMARY KEY AUTOINCREMENT,
+        Clinic VARCHAR(50) NOT NULL,
         Theatre CHAR NOT NULL,
-        PRIMARY KEY (Code),
-        FOREIGN KEY (Facility) REFERENCES FACILITY(Code)
+        FOREIGN KEY (Clinic) REFERENCES CLINIC(Name)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
     );
     
-    INSERT INTO OP_THEATRE (Facility, Theatre) VALUES
-        (1, 'A'),
-        (1, 'B'),
-        (3, 'A'),
-        (4, 'A'),
-        (5, 'B'),
-        (5, 'C'),
-        (5, 'D'),
-        (5, 'E'),
-        (6, 'A'),
-        (6, 'B'),
-        (6, 'C'),
-        (6, 'D'),
-        (6, 'E'),
-        (6, 'F'),
-        (6, 'G'),
-        (6, 'H'),
-        (6, 'I'),
-        (6, 'J'),
-        (7, 'A'),
-        (7, 'B'),
-        (7, 'C'),
-        (7, 'D');
+    INSERT INTO OP_THEATRE (Clinic, Theatre) VALUES
+        ('High Point Hospital', 'A'),
+        ('High Point Hospital', 'B'),
+        ('Newark Medical Clinic', 'A'),
+        ('Newark Medical Clinic', 'B'),
+        ('Newark Medical Clinic', 'C'),
+        ('Newark Medical Clinic', 'D'),
+        ('Newark Medical Clinic', 'E'),
+        ('Newark Medical Clinic', 'F');
+
+/* Trigger to make sure that no new operating theatre is added with the same clinic and theatre combination */
+
+    CREATE TRIGGER CHECK_OP_THEATRE_DUP_INSERT
+    BEFORE INSERT ON OP_THEATRE
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM OP_THEATRE WHERE Clinic = NEW.Clinic AND Theatre = NEW.Theatre
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Operating Theatre already exists.');
+    END;
+
+/* Trigger to make sure that no updated operating theatre has the same clinic and theatre combination */
+
+    CREATE TRIGGER CHECK_OP_THEATRE_DUP_UPDATE
+    BEFORE UPDATE ON OP_THEATRE
+    FOR EACH ROW
+    WHEN EXISTS (
+        SELECT 1 FROM OP_THEATRE WHERE Clinic = NEW.Clinic AND Theatre = NEW.Theatre
+    )
+    BEGIN
+        SELECT RAISE (ABORT, 'The selected Operating Theatre already exists.');
+    END;
